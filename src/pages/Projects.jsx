@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Link } from "react-router-dom";
 
 const ProjectCard = ({ title, description, link }) => (
   <div className="bg-white p-6 rounded-lg shadow-md transform transition duration-500 ease-in-out min-h-max hover:scale-105">

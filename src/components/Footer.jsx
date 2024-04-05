@@ -23,6 +23,7 @@ const Footer = () => {
           >
             <FaLinkedin className="text-2xl hover:text-gray-700 transition-colors" />
           </a>
+          {/* emailing needs to be improved */}
           <a href="mailto:marcusdavidalo.work@gmail.com">
             <FaEnvelope className="text-2xl hover:text-gray-700 transition-colors" />
           </a>

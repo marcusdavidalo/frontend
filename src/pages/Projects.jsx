@@ -43,6 +43,7 @@ const Projects = () => {
               title={project.name}
               description={project.description}
               link={project.html_url}
+              target="_blank"
             />
           ))}
         </div>

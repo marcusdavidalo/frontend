@@ -10,20 +10,20 @@ const Footer = () => {
         </p>
         <div className="flex space-x-4 mt-4 sm:mt-0">
           <a
-            href="https://github.com/yourusername"
+            href="https://github.com/marcusdavidalo"
             target="_blank"
             rel="noopener noreferrer"
           >
             <FaGithub className="text-2xl hover:text-gray-700 transition-colors" />
           </a>
           <a
-            href="https://www.linkedin.com/in/yourusername/"
+            href="https://www.linkedin.com/in/mdalo/"
             target="_blank"
             rel="noopener noreferrer"
           >
             <FaLinkedin className="text-2xl hover:text-gray-700 transition-colors" />
           </a>
-          <a href="mailto:youremail@example.com">
+          <a href="mailto:marcusdavidalo.work@gmail.com">
             <FaEnvelope className="text-2xl hover:text-gray-700 transition-colors" />
           </a>
         </div>

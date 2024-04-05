@@ -33,8 +33,8 @@ const About = () => {
                 I've even cloned some language models like Ollama and TavernAI.
                 I've also enjoyed cloning and using web interfaces for projects
                 like "InvokeAI" and "Automatic1111", and I'm now exploring
-                "OpenDevin" which is to my knowledge an open source version of
-                Devin.ai.
+                "OpenDevin" and "Devika" which is to my knowledge an open source
+                version of Devin.ai.
               </p>
               <p className="text-gray-600 mb-4">
                 I'm always eager to learn new emerging technologies relating to

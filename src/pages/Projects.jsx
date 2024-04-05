@@ -8,6 +8,8 @@ const ProjectCard = ({ title, description, link }) => (
       <p className="text-gray-600 mt-2">{description}</p>
       <a
         href={link}
+        target="_blank"
+        rel="noopener noreferrer"
         className="mt-4 inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700"
       >
         View Project
@@ -43,7 +45,6 @@ const Projects = () => {
               title={project.name}
               description={project.description}
               link={project.html_url}
-              target="_blank"
             />
           ))}
         </div>

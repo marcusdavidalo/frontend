@@ -15,7 +15,6 @@ const About = () => {
               alt="Marcus David Alo"
               className="w-full h-auto rounded-lg"
             />
-            {/* a description to show that this image was generated with my actual face run through StableDiffusion Controlnet */}
             <p className="mt-4 text-gray-600 text-lg">
               This image was generated with my actual face run through Stable
               Diffusion Controlnet.

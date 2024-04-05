@@ -30,7 +30,7 @@ const Header = () => {
                   </Link>
                 </div>
               </div>
-              <div className="hidden sm:ml-6 sm:flex sm:justify-center sm:space-x-8">
+              <div className="hidden sm:ml-6 sm:flex sm:justify-center sm:space-x-8 h-full">
                 {pages.map((page) => (
                   <Link
                     key={page.name}

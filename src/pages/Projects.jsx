@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import useTitle from "../hooks/useTitle";
 
 const ProjectCard = ({ title, description, link }) => (
   <div className="bg-white p-6 rounded-lg shadow-md transform transition duration-500 ease-in-out min-h-max hover:scale-105">
@@ -31,6 +32,8 @@ const Projects = () => {
         console.error("Error fetching repos", error);
       });
   }, []);
+
+  useTitle("Projects");
 
   return (
     <div className="bg-gray-100 min-h-screen">

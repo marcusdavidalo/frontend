@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import Me from "../assets/home/Me.png"; // Import your image
+import Me from "../assets/home/Me.png";
+import useTitle from "../hooks/useTitle";
 
 const Section = ({ title, description, link, linkText }) => (
   <div className="bg-white p-8 rounded-lg shadow-md transform transition duration-500 ease-in-out hover:scale-105">
@@ -16,6 +17,7 @@ const Section = ({ title, description, link, linkText }) => (
 );
 
 const Home = () => {
+  useTitle("Home");
   return (
     <div className="bg-gray-100 min-h-max">
       <div className="max-w-7xl mx-auto py-16 px-4 sm:px-6 lg:px-8">

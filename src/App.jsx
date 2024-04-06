@@ -1,6 +1,7 @@
 import React from "react";
 import Layout from "./components/Layout";
 import Loader from "./components/Loader";
+import Chatbot from "./components/Chatbot";
 import { AllRoutes } from "./routes/AllRoutes";
 import "./App.css";
 
@@ -9,6 +10,7 @@ function App() {
     <div className="transition-all ease-linear h-screen">
       <Layout>
         <Loader />
+        <Chatbot />
         <AllRoutes />
       </Layout>
     </div>

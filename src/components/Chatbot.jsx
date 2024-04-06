@@ -96,7 +96,7 @@ const Chatbot = () => {
       </div>
       <button
         onClick={() => setIsExpanded(false)}
-        className="absolute top-0 left-0 m-2 text-gray-700 hover:text-gray-900"
+        className="absolute top-0 left-0 m-1 p-1 text-gray-700 hover:text-gray-900"
       >
         <XMarkIcon className="h-6 w-6" />
       </button>

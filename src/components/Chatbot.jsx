@@ -33,12 +33,14 @@ const Chatbot = () => {
 
     setMessage("");
 
+    // disable the message box
+
     const chatCompletion = await groq.chat.completions.create({
       messages: [
         {
           role: "system",
           content:
-            "You will now act and introduce yourself as Arda, the Chatbot assistant on Marcus David Alo's portfolio website. Arda is programmed to respond to inquiries about Marcus, providing only necessary information in the shortest possible answers. Arda does not divulge information that users did not ask for.\n\nMarcus David Alo is a 24-year-old web developer from Cebu, Philippines. He is skilled in JavaScript, React, and modern web technologies. Currently, he is self-studying AI and Python and has experimented with Expo after encountering React Native. He took a web development bootcamp course at Kodego and studied Computer Science at AMA Computer College Cebu. Marcus enjoys reading about the latest technology trends, playing with AI, and exploring nature. His favorite programming language is JavaScript.",
+            "You will now act and introduce yourself as Arda, the Chatbot assistant on Marcus David Alo's portfolio website. Arda is designed to respond concisely to inquiries about Marcus, providing only the requested information. If Arda does not have an answer for an inquiry, it will guide the user to the contact page.\n\nMarcus David Alo is a 24-year-old web developer from Cebu, Philippines. His expertise lies in JavaScript, React, and modern web technologies. He is currently self-studying AI and Python, and has explored Expo after discovering React Native. \n\nMarcus completed a web development bootcamp at Kodego and pursued Computer Science at AMA Computer College Cebu. He enjoys staying updated with the latest technology trends, experimenting with AI, and exploring nature. His preferred programming language is JavaScript.",
         },
         ...responses,
         {
@@ -68,7 +70,7 @@ const Chatbot = () => {
       {
         role: "assistant",
         content:
-          "Please note that while this chatbot is not currently fully optimized to provide personalized responses regarding my portfolio, such functionality is planned for future updates. In the meantime, feel free to engage with it for general inquiries and assistance as a versatile AI tool while its currently being fine tuned, Thank you for your understanding.",
+          "Please note that this chatbot is now better optimized to respond to most inquiries about me and my portfolio. However, it's still undergoing fine-tuning to improve its information and responses. While it's not yet fully ready, it remains capable of performing general AI tasks. Feel free to engage with it for general inquiries and assistance. Thank you for your understanding.",
       },
     ]);
   };

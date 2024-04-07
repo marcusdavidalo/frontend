@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import Groq from "groq-sdk";
+import { ReactComponent as GroqLogo } from "../assets/chatbot/groq-seeklogo.svg";
 import Me from "../assets/home/Me.png";
 import { ChatBubbleLeftIcon, XMarkIcon } from "@heroicons/react/24/solid";
 
@@ -29,7 +30,7 @@ const Chatbot = () => {
       ],
       model: "mixtral-8x7b-32768",
       temperature: 0.5,
-      max_tokens: 512,
+      max_tokens: 768,
     });
 
     setResponses([
@@ -67,6 +68,14 @@ const Chatbot = () => {
 
   return (
     <div className="fixed bottom-0 right-0 m-6 bg-white p-6 rounded-lg shadow-lg w-96 z-40">
+      <div className="flex justify-start">
+        <p className="text-base text-gray-500 bg-gray-200 px-2 rounded-md">
+          Powered by{" "}
+          <a href="https://groq.com/" rel="noreferrer noopener" target="_blank">
+            <GroqLogo className="inline h-8 w-8" />
+          </a>
+        </p>
+      </div>
       <div className="overflow-y-auto max-h-96 min-h-96 mb-4">
         {responses.map((response, index) => (
           <div
@@ -84,7 +93,7 @@ const Chatbot = () => {
                 className="h-10 w-10 rounded-full"
               />
             )}
-            <p className="text-lg font-medium">{response.content}</p>
+            <p className="text-mono font-medium">{response.content}</p>
           </div>
         ))}
       </div>
@@ -107,13 +116,13 @@ const Chatbot = () => {
           Send
         </button>
       </div>
-      <p className="text-sm text-gray-500 bg-gray-200 p-2 rounded-md mt-2">
+      <p className="text-base text-gray-700 bg-gray-200 p-2 rounded-md mt-2">
         Disclaimer: This AI Chatbot is currently undergoing fine-tuning, it
         might respond inaccurately, Thank you for understanding
       </p>
       <button
         onClick={() => setIsExpanded(false)}
-        className="absolute top-0 left-0 m-1 p-1 text-gray-700 hover:text-gray-900"
+        className="absolute top-0 right-0 m-1 p-2 text-gray-700 hover:text-gray-900"
       >
         <XMarkIcon className="h-6 w-6" />
       </button>

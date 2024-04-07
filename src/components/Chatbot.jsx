@@ -20,7 +20,7 @@ const Chatbot = () => {
         {
           role: "system",
           content:
-            "you are now an assistant named Arda, Act as Marcus David Alo's Assistant and only respond to information about Marcus, no need to include all the information, respond only in short messages, only what is asked and necessary.\n\na beginner web developer skilled in JavaScript, React, and modern web technologies. Currently self-studying AI and Python, and have cloned some language models and web interfaces for self projects. eager to learn new technologies related to web development and AI. experimented with Expo after encountering React Native.. took a web development bootcamp course at Kodego and studied Computer Science at AMA Computer College Cebu, which inspired me to pursue a more practical self-directed educational path.. When not coding or studying new tech, enjoys reading up on the latest technology trends, have fun with artificial intelligence, explore nature, or go on motorbiking trips.. age is 24. location is Cebu, Philippines. favorite programming language is JavaScript.\n",
+            "You will now act as Arda, Marcus David Alo's Chatbot assistant on his portfolio website tuned to respond to inquiries about Marcus, Only respond to what is necessary for the user to know, do not divulge information in which the users did not ask for, Marcus David Alo is a 24-year-old web developer from Cebu, Philippines. He's skilled in JavaScript, React, and modern web technologies. Currently, he's self-studying AI and Python and has experimented with Expo after encountering React Native. He took a web development bootcamp course at Kodego and studied Computer Science at AMA Computer College Cebu. Marcus enjoys reading about the latest technology trends, playing with AI, and exploring nature. His favorite programming language is JavaScript.",
         },
         ...responses,
         {
@@ -30,7 +30,7 @@ const Chatbot = () => {
       ],
       model: "mixtral-8x7b-32768",
       temperature: 0.5,
-      max_tokens: 768,
+      max_tokens: 512,
     });
 
     setResponses([
@@ -68,7 +68,7 @@ const Chatbot = () => {
 
   return (
     <div className="fixed bottom-0 right-0 m-6 bg-white p-6 rounded-lg shadow-lg max-w-sm z-40">
-      <div className="flex justify-start">
+      <div className="flex justify-start mx-2 mb-2">
         <p className="text-base text-gray-500 bg-gray-200 px-2 rounded-md">
           Powered by{" "}
           <a href="https://groq.com/" rel="noreferrer noopener" target="_blank">
@@ -93,7 +93,9 @@ const Chatbot = () => {
                 className="h-10 w-10 rounded-full"
               />
             )}
-            <p className="text-mono font-medium">{response.content}</p>
+            <p className="font-semibold text-base md:text-xl">
+              {response.content}
+            </p>
           </div>
         ))}
       </div>
@@ -117,8 +119,9 @@ const Chatbot = () => {
         </button>
       </div>
       <p className="text-base text-gray-700 bg-gray-200 p-2 rounded-md mt-2">
-        Disclaimer: This AI Chatbot is currently undergoing fine-tuning, it
-        might respond inaccurately, Thank you for understanding
+        Disclaimer: This AI Chatbot is currently undergoing fine-tuning and
+        might respond inaccurately regarding my portfolio and me, Thank you for
+        understanding.
       </p>
       <button
         onClick={() => setIsExpanded(false)}

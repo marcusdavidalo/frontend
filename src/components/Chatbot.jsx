@@ -31,6 +31,8 @@ const Chatbot = () => {
     ]);
     setIsTyping(true);
 
+    setMessage("");
+
     const chatCompletion = await groq.chat.completions.create({
       messages: [
         {
@@ -58,8 +60,6 @@ const Chatbot = () => {
         content: chatCompletion.choices[0]?.message?.content || "",
       },
     ]);
-
-    setMessage("");
   };
 
   const handleExpand = () => {

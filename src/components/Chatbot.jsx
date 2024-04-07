@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Groq from "groq-sdk";
 import { ReactComponent as GroqLogo } from "../assets/chatbot/groq-seeklogo.svg";
 import Me from "../assets/home/Me.png";
@@ -13,14 +13,30 @@ const Chatbot = () => {
   const [message, setMessage] = useState("");
   const [responses, setResponses] = useState([]);
   const [isExpanded, setIsExpanded] = useState(false);
+  const [isTyping, setIsTyping] = useState(false);
+  const chatEndRef = useRef(null);
+
+  const scrollToBottom = () => {
+    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(scrollToBottom, [responses]);
 
   const sendMessage = async () => {
+    if (message.trim() === "") return;
+
+    setResponses((prevResponses) => [
+      ...prevResponses,
+      { role: "user", content: message },
+    ]);
+    setIsTyping(true);
+
     const chatCompletion = await groq.chat.completions.create({
       messages: [
         {
           role: "system",
           content:
-            "You will now act and introduce yourself as Arda, the Chatbot assistant on Marcus David Alo’s portfolio website. Arda is programmed to respond to inquiries about Marcus, providing only necessary information in the shortest possible answers. Arda does not divulge information that users did not ask for.\n\nMarcus David Alo is a 24-year-old web developer from Cebu, Philippines. He is skilled in JavaScript, React, and modern web technologies. Currently, he is self-studying AI and Python and has experimented with Expo after encountering React Native. He took a web development bootcamp course at Kodego and studied Computer Science at AMA Computer College Cebu. Marcus enjoys reading about the latest technology trends, playing with AI, and exploring nature. His favorite programming language is JavaScript.",
+            "You will now act and introduce yourself as Arda, the Chatbot assistant on Marcus David Alo's portfolio website. Arda is programmed to respond to inquiries about Marcus, providing only necessary information in the shortest possible answers. Arda does not divulge information that users did not ask for.\n\nMarcus David Alo is a 24-year-old web developer from Cebu, Philippines. He is skilled in JavaScript, React, and modern web technologies. Currently, he is self-studying AI and Python and has experimented with Expo after encountering React Native. He took a web development bootcamp course at Kodego and studied Computer Science at AMA Computer College Cebu. Marcus enjoys reading about the latest technology trends, playing with AI, and exploring nature. His favorite programming language is JavaScript.",
         },
         ...responses,
         {
@@ -31,16 +47,18 @@ const Chatbot = () => {
       model: "mixtral-8x7b-32768",
       temperature: 0.5,
       max_tokens: 512,
+      top_p: 0.75,
     });
 
-    setResponses([
-      ...responses,
-      { role: "user", content: message },
+    setIsTyping(false);
+    setResponses((prevResponses) => [
+      ...prevResponses,
       {
         role: "assistant",
         content: chatCompletion.choices[0]?.message?.content || "",
       },
     ]);
+
     setMessage("");
   };
 
@@ -98,6 +116,8 @@ const Chatbot = () => {
             </p>
           </div>
         ))}
+        {isTyping && <div className="typing-animation">Arda is typing...</div>}
+        <div ref={chatEndRef} />
       </div>
       <div className="flex items-center space-x-2">
         <input
@@ -109,6 +129,7 @@ const Chatbot = () => {
             }
           }}
           className="flex-1 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-600"
+          id="messagebox"
           placeholder="Type your message..."
         />
         <button

@@ -11,7 +11,12 @@ const Contact = () => {
           Contact Me
         </h1>
         <div className="bg-white p-8 rounded-lg shadow-md">
-          <form>
+          <form action="https://api.web3forms.com/submit" method="POST">
+            <input
+              type="hidden"
+              name="access_key"
+              value={process.env.REACT_APP_WEB3FORMS}
+            />
             <div className="mb-4">
               <label
                 htmlFor="name"

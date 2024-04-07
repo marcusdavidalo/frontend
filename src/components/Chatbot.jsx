@@ -59,15 +59,15 @@ const Chatbot = () => {
     return (
       <div
         onClick={handleExpand}
-        className="fixed bottom-0 right-0 m-4 bg-indigo-600 p-4 rounded-full cursor-pointer shadow-md z-40"
+        className="fixed bottom-0 right-0 m-4 bg-indigo-600 p-2 rounded-full cursor-pointer shadow-md z-40"
       >
-        <ChatBubbleLeftIcon className="h-8 w-8 text-white" />
+        <ChatBubbleLeftIcon className="h-10 w-10 text-white" />
       </div>
     );
   }
 
   return (
-    <div className="fixed bottom-0 right-0 m-6 bg-white p-6 rounded-lg shadow-lg w-96 z-40">
+    <div className="fixed bottom-0 right-0 m-6 bg-white p-6 rounded-lg shadow-lg max-w-sm z-40">
       <div className="flex justify-start">
         <p className="text-base text-gray-500 bg-gray-200 px-2 rounded-md">
           Powered by{" "}

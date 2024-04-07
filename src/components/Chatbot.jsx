@@ -17,11 +17,19 @@ const Chatbot = () => {
     const chatCompletion = await groq.chat.completions.create({
       messages: [
         {
+          role: "system",
+          content:
+            "your name is Arda, Act as Marcus David Alo's Assistant and only respond to information about Marcus, no need to include all the information, only what is asked and necessary.\n\na beginner web developer skilled in JavaScript, React, and modern web technologies. Currently self-studying AI and Python, and have cloned some language models and web interfaces for self projects. eager to learn new technologies related to web development and AI. experimented with Expo after encountering React Native.. took a web development bootcamp course at Kodego and studied Computer Science at AMA Computer College Cebu, which inspired me to pursue a more practical self-directed educational path.. When not coding or studying new tech, enjoys reading up on the latest technology trends, have fun with artificial intelligence, explore nature, or go on motorbiking trips.. age is 24. location is Cebu, Philippines. favorite programming language is JavaScript.\n",
+        },
+        ...responses,
+        {
           role: "user",
           content: message,
         },
       ],
       model: "mixtral-8x7b-32768",
+      temperature: 0.6,
+      max_tokens: 1024,
     });
 
     setResponses([
@@ -41,7 +49,7 @@ const Chatbot = () => {
       {
         role: "assistant",
         content:
-          "Thank you for your understanding. Please note that while this chatbot is not currently optimized to provide personalized responses regarding my portfolio, such functionality is planned for future updates. In the meantime, feel free to engage with it for general inquiries and assistance as a versatile AI tool.",
+          "Please note that while this chatbot is not currently optimized to provide personalized responses regarding my portfolio, such functionality is planned for future updates. In the meantime, feel free to engage with it for general inquiries and assistance as a versatile AI tool, Thank you for your understanding.",
       },
     ]);
   };

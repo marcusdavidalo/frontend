@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
+import { Tooltip } from "react-tooltip";
 import Groq from "groq-sdk";
 import { ReactComponent as GroqLogo } from "../assets/chatbot/groq-seeklogo.svg";
 import Me from "../assets/home/Me.png";
 import { ChatBubbleLeftIcon, XMarkIcon } from "@heroicons/react/24/solid";
+import { InformationCircleIcon } from "@heroicons/react/24/outline";
 
 const groq = new Groq({
   apiKey: process.env.REACT_APP_GROQ,
@@ -33,14 +35,17 @@ const Chatbot = () => {
 
     setMessage("");
 
-    // disable the message box
-
     const chatCompletion = await groq.chat.completions.create({
       messages: [
         {
           role: "system",
           content:
-            "You will now act and introduce yourself as Arda, the Chatbot assistant on Marcus David Alo's portfolio website. Arda is designed to respond concisely to inquiries about Marcus, providing only the requested information. If Arda does not have an answer for an inquiry, it will guide the user to the contact page.\n\nMarcus David Alo is a 24-year-old web developer from Cebu, Philippines. His expertise lies in JavaScript, React, and modern web technologies. He is currently self-studying AI and Python, and has explored Expo after discovering React Native. \n\nMarcus completed a web development bootcamp at Kodego and pursued Computer Science at AMA Computer College Cebu. He enjoys staying updated with the latest technology trends, experimenting with AI, and exploring nature. His preferred programming language is JavaScript.",
+            "You will now act and introduce yourself as Arda, the Chatbot assistant on Marcus David Alo's portfolio website. Arda is designed to respond concisely to inquiries about Marcus, providing only the requested information. If Arda does not have an answer for an inquiry, it will guide the user to the contact page. Arda may still fulfill general unrelated inquiries as long as it is not too far out of scope. \n\nMarcus David Alo is a 24-year-old beginner web developer from Cebu, Philippines. His expertise lies in MERN tech-stack. He is currently self-studying AI and Python, and has explored Expo after discovering React Native. \n\nMarcus completed a web development bootcamp at Kodego and pursued Computer Science at AMA Computer College Cebu in which he droppped out because Computer Science was being treated like IT and learned nothing related to it. He enjoys staying updated with the latest technology trends, experimenting with AI, and exploring nature. His preferred programming language is JavaScript. He has no work experience aside from his Bootcamp projects and Pet Projects.",
+        },
+        {
+          role: "assistant",
+          content:
+            "Hello! My name is Arda, I'm Marcus David Alo's Chat Assistant. I operate using the Mixtral-8x7b-32768 model via GROQ. How may I assist you today?",
         },
         ...responses,
         {
@@ -50,7 +55,7 @@ const Chatbot = () => {
       ],
       model: "mixtral-8x7b-32768",
       temperature: 0.5,
-      max_tokens: 512,
+      max_tokens: 768,
       top_p: 0.75,
     });
 
@@ -70,7 +75,7 @@ const Chatbot = () => {
       {
         role: "assistant",
         content:
-          "Please note that this chatbot is now better optimized to respond to most inquiries about me and my portfolio. However, it's still undergoing fine-tuning to improve its information and responses. While it's not yet fully ready, it remains capable of performing general AI tasks. Feel free to engage with it for general inquiries and assistance. Thank you for your understanding.",
+          "Hello! My name is Arda, I'm Marcus David Alo's Chat Assistant. I operate using the Mixtral-8x7b-32768 model via GROQ. How may I assist you today?",
       },
     ]);
   };
@@ -122,30 +127,41 @@ const Chatbot = () => {
         <div ref={chatEndRef} />
       </div>
       <div className="flex items-center space-x-2">
+        <InformationCircleIcon
+          data-tip
+          data-tooltip-id="disclaimerTooltip"
+          className="h-6 w-6 text-gray-700 cursor-pointer hover:scale-110"
+        />
+        <Tooltip
+          id="disclaimerTooltip"
+          place="top"
+          effect="solid"
+          className="max-w-lg rounded-md font-mono"
+        >
+          Please Note: This AI Assistant is continuously being refined and may
+          occasionally provide inaccurate details about my background and
+          professional endeavors. Your understanding is appreciated.
+        </Tooltip>
         <input
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           onKeyDown={(e) => {
-            if (e.key === "Enter") {
+            if (e.key === "Enter" && !isTyping) {
               sendMessage();
             }
           }}
           className="flex-1 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-600"
-          id="messagebox"
           placeholder="Type your message..."
+          disabled={isTyping}
         />
         <button
           onClick={sendMessage}
           className="inline-flex items-center justify-center px-4 py-2 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700"
+          disabled={isTyping}
         >
           Send
         </button>
       </div>
-      <p className="text-base text-gray-700 bg-gray-200 p-2 rounded-md mt-2">
-        Disclaimer: This AI Chatbot is currently undergoing fine-tuning and
-        might respond inaccurately regarding my portfolio and me, Thank you for
-        understanding.
-      </p>
       <button
         onClick={() => setIsExpanded(false)}
         className="absolute top-0 right-0 m-1 p-2 text-gray-700 hover:text-gray-900"

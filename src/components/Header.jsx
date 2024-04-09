@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { Disclosure } from "@headlessui/react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
+import { Tooltip } from "react-tooltip";
 
 const Header = () => {
   const pages = [
@@ -42,7 +43,10 @@ const Header = () => {
                 ))}
               </div>
               <div className="flex items-center justify-end">
+                <Tooltip id="theme-button"></Tooltip>
                 <button
+                  data-tooltip-id="theme-button"
+                  data-tooltip-content="This is currently non-functional, I will add functionality to this in future updates"
                   onClick={toggleDarkMode}
                   className="rounded-md bg-white px-3 py-2 text-md font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                 >

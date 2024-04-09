@@ -7,7 +7,13 @@ const ProjectCard = ({ title, description, link }) => (
   <div className="bg-white p-6 rounded-lg shadow-md transform transition duration-500 ease-in-out min-h-max hover:scale-105">
     <div className="mt-4">
       <h3 className="text-xl font-bold text-gray-900">{title}</h3>
-      <p className="text-gray-600 mt-2">{description}</p>
+      <p className="text-gray-600 text-lg mt-2">
+        {description
+          ? description.length > 100
+            ? `${description.substring(0, 100)}...`
+            : description
+          : "No description available."}
+      </p>
       <a
         href={link}
         target="_blank"
@@ -23,7 +29,7 @@ const ProjectCard = ({ title, description, link }) => (
 const Projects = () => {
   const [projects, setProjects] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [sort, setSort] = useState({ field: "name", direction: "asc" });
+  const [sort, setSort] = useState({ field: "updated_at", direction: "asc" });
   const projectsPerPage = 6;
 
   useEffect(() => {
@@ -91,7 +97,7 @@ const Projects = () => {
               >
                 <span className="text-gray-700">
                   {sort.field === "name"
-                    ? sort.direction === "asc"
+                    ? sort.direction === "desc"
                       ? "Name ▲"
                       : "Name ▼"
                     : "Name"}
@@ -108,7 +114,7 @@ const Projects = () => {
               >
                 <span className="text-gray-700">
                   {sort.field === "created_at"
-                    ? sort.direction === "asc"
+                    ? sort.direction === "desc"
                       ? "Created ▲"
                       : "Created ▼"
                     : "Created"}
@@ -125,7 +131,7 @@ const Projects = () => {
               >
                 <span className="text-gray-700">
                   {sort.field === "updated_at"
-                    ? sort.direction === "asc"
+                    ? sort.direction === "desc"
                       ? "Updated ▲"
                       : "Updated ▼"
                     : "Updated"}
@@ -136,6 +142,11 @@ const Projects = () => {
                   }`}
                 />
               </button>
+            </div>
+            <div className="space-x-2 hidden md:flex">
+              <span className="flex items-center space-x-1 px-3 py-2 bg-white rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                Total projects: {projects.length}
+              </span>
             </div>
             <div className="flex space-x-2">
               <button

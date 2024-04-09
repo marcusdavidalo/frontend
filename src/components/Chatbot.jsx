@@ -97,7 +97,18 @@ const Chatbot = () => {
         <p className="text-base text-gray-500 bg-gray-200 px-2 rounded-md">
           Powered by{" "}
           <a href="https://groq.com/" rel="noreferrer noopener" target="_blank">
-            <GroqLogo className="inline h-8 w-8" />
+            <GroqLogo
+              data-tooltip-id="groqtooltip"
+              className="inline h-8 w-8"
+            />
+            <Tooltip
+              id="groqtooltip"
+              place="top"
+              effect="solid"
+              className="max-w-lg rounded-md font-mono"
+            >
+              This opens a new tab to groq's main site.
+            </Tooltip>
           </a>
         </p>
       </div>
@@ -128,7 +139,6 @@ const Chatbot = () => {
       </div>
       <div className="flex items-center space-x-2">
         <InformationCircleIcon
-          data-tip
           data-tooltip-id="disclaimerTooltip"
           className="h-6 w-6 text-gray-700 cursor-pointer hover:scale-110"
         />

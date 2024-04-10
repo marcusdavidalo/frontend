@@ -27,7 +27,7 @@ function App() {
 
   return (
     <div
-      className={`transition-all ease-linear h-screen ${
+      className={`h-screen bg-white dark:bg-gray-800 ${
         isDarkMode ? "dark" : ""
       }`}
     >

@@ -3,7 +3,7 @@ import { FaGithub, FaLinkedin, FaEnvelope } from "react-icons/fa";
 
 const Footer = () => {
   return (
-    <footer className="bg-white text-gray-500 py-8">
+    <footer className="bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row justify-between items-center">
         <p className="text-lg">
           &copy; 2023 Marcus David Alo. All rights reserved.
@@ -14,18 +14,18 @@ const Footer = () => {
             target="_blank"
             rel="noopener noreferrer"
           >
-            <FaGithub className="text-2xl hover:text-gray-700 transition-colors" />
+            <FaGithub className="text-2xl hover:text-gray-700 dark:hover:text-gray-300 transition-colors" />
           </a>
           <a
             href="https://www.linkedin.com/in/mdalo/"
             target="_blank"
             rel="noopener noreferrer"
           >
-            <FaLinkedin className="text-2xl hover:text-gray-700 transition-colors" />
+            <FaLinkedin className="text-2xl hover:text-gray-700 dark:hover:text-gray-300 transition-colors" />
           </a>
           {/* emailing needs to be improved */}
           <a href="mailto:marcusdavidalo.work@gmail.com">
-            <FaEnvelope className="text-2xl hover:text-gray-700 transition-colors" />
+            <FaEnvelope className="text-2xl hover:text-gray-700 dark:hover:text-gray-300 transition-colors" />
           </a>
         </div>
       </div>

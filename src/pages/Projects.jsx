@@ -4,10 +4,12 @@ import useTitle from "../hooks/useTitle";
 import { ChevronDownIcon } from "@heroicons/react/24/solid";
 
 const ProjectCard = ({ title, description, link }) => (
-  <div className="bg-white p-6 rounded-lg shadow-md transform transition duration-500 ease-in-out min-h-max hover:scale-105">
+  <div className="bg-white dark:bg-gray-950 p-6 rounded-lg shadow-md transform transition duration-500 ease-in-out min-h-max hover:scale-105">
     <div className="mt-4">
-      <h3 className="text-xl font-bold text-gray-900">{title}</h3>
-      <p className="text-gray-600 text-lg mt-2">
+      <h3 className="text-xl font-bold text-gray-900 dark:text-gray-200">
+        {title}
+      </h3>
+      <p className="text-gray-600 dark:text-gray-400 text-lg mt-2">
         {description
           ? description.length > 100
             ? `${description.substring(0, 100)}...`
@@ -80,22 +82,22 @@ const Projects = () => {
   useTitle("Projects");
 
   return (
-    <div className="bg-gray-100 min-h-screen">
+    <div className="bg-gray-100 dark:bg-gray-900 min-h-screen">
       <div className="max-w-7xl mx-auto py-16 px-4 sm:px-6 lg:px-8">
-        <h1 className="text-4xl font-extrabold text-gray-900 mb-8">
+        <h1 className="text-4xl font-extrabold text-gray-900 dark:text-gray-200 mb-8">
           My Projects
         </h1>
         <div>
           <div className="flex flex-col md:flex-row md:justify-between justify-start items-center mb-4">
             <div className="flex items-center space-x-2 mb-2 md:mb-0">
-              <span className="text-sm font-medium text-gray-700">
+              <span className="text-sm font-medium text-gray-700 dark:text-gray-200">
                 Sort by:
               </span>
               <button
-                className="flex items-center space-x-1 px-3 py-2 bg-white rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="flex items-center space-x-1 px-3 py-2 bg-white dark:bg-gray-950 rounded-md shadow-sm"
                 onClick={() => handleSort("name")}
               >
-                <span className="text-gray-700">
+                <span className="text-gray-700 dark:text-gray-200">
                   {sort.field === "name"
                     ? sort.direction === "desc"
                       ? "Name ▲"
@@ -109,10 +111,10 @@ const Projects = () => {
                 />
               </button>
               <button
-                className="flex items-center space-x-1 px-3 py-2 bg-white rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="flex items-center space-x-1 px-3 py-2 bg-white dark:bg-gray-950 rounded-md shadow-sm"
                 onClick={() => handleSort("created_at")}
               >
-                <span className="text-gray-700">
+                <span className="text-gray-700 dark:text-gray-200">
                   {sort.field === "created_at"
                     ? sort.direction === "desc"
                       ? "Created ▲"
@@ -126,10 +128,10 @@ const Projects = () => {
                 />
               </button>
               <button
-                className="flex items-center space-x-1 px-3 py-2 bg-white rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="flex items-center space-x-1 px-3 py-2 bg-white dark:bg-gray-950 rounded-md shadow-sm"
                 onClick={() => handleSort("updated_at")}
               >
-                <span className="text-gray-700">
+                <span className="text-gray-700 dark:text-gray-200">
                   {sort.field === "updated_at"
                     ? sort.direction === "desc"
                       ? "Updated ▲"
@@ -144,7 +146,7 @@ const Projects = () => {
               </button>
             </div>
             <div className="space-x-2 hidden md:flex">
-              <span className="flex items-center space-x-1 px-3 py-2 bg-white rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+              <span className="flex items-center space-x-1 px-3 py-2 bg-white dark:bg-gray-950 dark:text-gray-200 rounded-md shadow-sm">
                 Total projects: {projects.length}
               </span>
             </div>

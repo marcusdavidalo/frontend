@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Disclosure } from "@headlessui/react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
@@ -15,18 +15,36 @@ const Header = () => {
   const [isDarkMode, setIsDarkMode] = useState(false);
 
   const toggleDarkMode = () => {
-    setIsDarkMode(!isDarkMode);
+    const newIsDarkMode = !isDarkMode;
+    setIsDarkMode(newIsDarkMode);
+    localStorage.setItem("isDarkMode", JSON.stringify(newIsDarkMode));
   };
 
+  useEffect(() => {
+    if (isDarkMode) {
+      document.body.classList.add("dark");
+    } else {
+      document.body.classList.remove("dark");
+    }
+  }, [isDarkMode]);
+
   return (
-    <Disclosure as="nav" className="bg-white shadow">
+    <Disclosure
+      as="nav"
+      className={`bg-white dark:bg-gray-800 shadow text-gray-700 dark:text-white ${
+        isDarkMode ? "dark" : ""
+      }`}
+    >
       {({ open }) => (
         <>
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-3 h-16 items-center">
               <div className="flex">
                 <div className="flex flex-shrink-0 items-center">
-                  <Link to="/" className="text-3xl font-bold">
+                  <Link
+                    to="/"
+                    className="text-3xl font-bold text-black dark:text-gray-200"
+                  >
                     Marcus David Alo
                   </Link>
                 </div>
@@ -36,7 +54,7 @@ const Header = () => {
                   <Link
                     key={page.name}
                     to={page.link}
-                    className="inline-flex items-center border-b-2 border-transparent px-1 pt-1 text-lg font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700"
+                    className="inline-flex items-center border-b-2 border-transparent px-1 pt-1 text-lg font-medium text-gray-500 dark:text-gray-200 hover:border-gray-300 dark:hover:border-gray-600 hover:text-gray-700 dark:hover:text-gray-200"
                   >
                     {page.name}
                   </Link>
@@ -46,9 +64,9 @@ const Header = () => {
                 <Tooltip id="theme-button"></Tooltip>
                 <button
                   data-tooltip-id="theme-button"
-                  data-tooltip-content="This is currently non-functional, I will add functionality to this in future updates"
+                  data-tooltip-content="This will have a proper UI in future updates"
                   onClick={toggleDarkMode}
-                  className="rounded-md bg-white px-3 py-2 text-md font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                  className="rounded-md bg-gray-100 dark:bg-gray-900 px-3 py-2 text-md font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700"
                 >
                   {isDarkMode ? "Light Mode" : "Dark Mode"}
                 </button>

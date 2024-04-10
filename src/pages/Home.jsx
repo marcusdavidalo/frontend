@@ -12,9 +12,13 @@ const Section = ({
   onClick,
   isExternal,
 }) => (
-  <div className="bg-white p-6 rounded-lg shadow-md transform transition duration-500 ease-in-out hover:scale-105">
-    <h2 className="text-3xl font-bold text-gray-900 mb-2">{title}</h2>
-    <p className="text-lg text-gray-600 mb-4">{description}</p>
+  <div className="bg-white dark:bg-gray-950 p-6 rounded-lg shadow-md transform transition duration-500 ease-in-out hover:scale-105">
+    <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-200 mb-2">
+      {title}
+    </h2>
+    <p className="text-lg text-gray-600 dark:text-gray-400 mb-4">
+      {description}
+    </p>
     {isExternal ? (
       <a
         href={link}
@@ -39,7 +43,7 @@ const Home = () => {
   useTitle("Home");
 
   return (
-    <div className="bg-gray-100 min-h-max">
+    <div className="bg-gray-100 dark:bg-gray-900 min-h-max">
       <div className="max-w-7xl mx-auto py-16 px-4 sm:px-6 lg:px-8">
         <div className="text-center">
           <img
@@ -47,10 +51,10 @@ const Home = () => {
             alt="Marcus David Alo"
             className="mx-auto h-32 w-32 rounded-full"
           />{" "}
-          <h1 className="text-4xl font-extrabold text-gray-900 sm:text-5xl md:text-6xl">
+          <h1 className="text-4xl font-extrabold text-gray-900 dark:text-gray-200 sm:text-5xl md:text-6xl">
             Marcus David Alo
           </h1>
-          <p className="mt-4 max-w-lg mx-auto text-xl text-gray-600">
+          <p className="mt-4 max-w-lg mx-auto text-xl text-gray-600 dark:text-gray-400">
             I am an enthusiastic beginner web developer with a solid grasp of
             JavaScript, React, and modern web technologies. I'm passionate about
             continuously expanding my skills in web development.

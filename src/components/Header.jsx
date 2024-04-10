@@ -4,21 +4,13 @@ import { Disclosure } from "@headlessui/react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import { Tooltip } from "react-tooltip";
 
-const Header = () => {
+const Header = ({ isDarkMode, toggleDarkMode }) => {
   const pages = [
     { name: "Home", link: "/" },
     { name: "About", link: "/about" },
     { name: "Projects", link: "/projects" },
     { name: "Contact", link: "/contact" },
   ];
-
-  const [isDarkMode, setIsDarkMode] = useState(false);
-
-  const toggleDarkMode = () => {
-    const newIsDarkMode = !isDarkMode;
-    setIsDarkMode(newIsDarkMode);
-    localStorage.setItem("isDarkMode", JSON.stringify(newIsDarkMode));
-  };
 
   useEffect(() => {
     if (isDarkMode) {

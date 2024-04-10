@@ -7,13 +7,14 @@ import "./App.css";
 
 function App() {
   const [isDarkMode, setIsDarkMode] = useState(() => {
-    // Get the initial dark mode setting from localStorage
     const savedIsDarkMode = localStorage.getItem("isDarkMode");
     return savedIsDarkMode !== null ? JSON.parse(savedIsDarkMode) : false;
   });
 
   const toggleDarkMode = () => {
-    setIsDarkMode(!isDarkMode);
+    const newIsDarkMode = !isDarkMode;
+    setIsDarkMode(newIsDarkMode);
+    localStorage.setItem("isDarkMode", JSON.stringify(newIsDarkMode));
   };
 
   useEffect(() => {
@@ -22,8 +23,6 @@ function App() {
     } else {
       document.body.classList.remove("dark");
     }
-    // Save the current dark mode setting to localStorage
-    localStorage.setItem("isDarkMode", JSON.stringify(isDarkMode));
   }, [isDarkMode]);
 
   return (
@@ -32,7 +31,7 @@ function App() {
         isDarkMode ? "dark" : ""
       }`}
     >
-      <Layout toggleDarkMode={toggleDarkMode}>
+      <Layout isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode}>
         <Loader />
         <Chatbot />
         <AllRoutes />

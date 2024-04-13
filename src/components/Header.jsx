@@ -1,8 +1,12 @@
 import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Disclosure } from "@headlessui/react";
-import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
-import { Tooltip } from "react-tooltip";
+import {
+  Bars3Icon,
+  XMarkIcon,
+  MoonIcon,
+  SunIcon,
+} from "@heroicons/react/24/outline";
 
 const Header = ({ isDarkMode, toggleDarkMode }) => {
   const pages = [
@@ -53,14 +57,27 @@ const Header = ({ isDarkMode, toggleDarkMode }) => {
                 ))}
               </div>
               <div className="flex items-center justify-end">
-                <Tooltip id="theme-button"></Tooltip>
                 <button
-                  data-tooltip-id="theme-button"
-                  data-tooltip-content="This will have a proper UI in future updates"
                   onClick={toggleDarkMode}
-                  className="rounded-md bg-gray-100 dark:bg-gray-900 px-3 py-2 text-md font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700"
+                  className="rounded-md text-md font-medium"
                 >
-                  {isDarkMode ? "Light Mode" : "Dark Mode"}
+                  <div
+                    className={`transition-transform duration-700 ease transform hover:scale-125 ${
+                      isDarkMode ? "" : "rotate-180"
+                    }`}
+                  >
+                    {isDarkMode ? (
+                      <MoonIcon
+                        className="block h-7 w-7 text-gray-200"
+                        aria-hidden="true"
+                      />
+                    ) : (
+                      <SunIcon
+                        className="block h-8 w-8 text-amber-500"
+                        aria-hidden="true"
+                      />
+                    )}
+                  </div>
                 </button>
               </div>
               <div className="-mr-2 flex sm:hidden justify-end">

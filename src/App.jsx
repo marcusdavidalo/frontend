@@ -20,8 +20,10 @@ function App() {
   useEffect(() => {
     if (isDarkMode) {
       document.body.classList.add("dark");
+      document.body.classList.add("bg-gray-950");
     } else {
       document.body.classList.remove("dark");
+      document.body.classList.remove("bg-gray-950");
     }
   }, [isDarkMode]);
 

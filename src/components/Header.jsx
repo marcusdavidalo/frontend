@@ -34,8 +34,8 @@ const Header = ({ isDarkMode, toggleDarkMode }) => {
       {({ open }) => (
         <>
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div className="grid grid-cols-3 h-16 items-center">
-              <div className="flex">
+            <div className="grid grid-cols-4 h-16 items-center">
+              <div className="flex justify-center col-start-2 col-end-4 row-start-1 sm:col-start-1 sm:col-end-2 sm:justify-start">
                 <div className="flex flex-shrink-0 items-center">
                   <Link
                     to="/"
@@ -45,7 +45,7 @@ const Header = ({ isDarkMode, toggleDarkMode }) => {
                   </Link>
                 </div>
               </div>
-              <div className="hidden sm:ml-6 sm:flex sm:justify-center sm:space-x-8 h-full">
+              <div className="hidden col-start-2 col-end-4 row-start-1 sm:ml-6 sm:col-start-2 sm:flex sm:justify-center sm:space-x-8 h-full">
                 {pages.map((page) => (
                   <Link
                     key={page.name}
@@ -56,7 +56,7 @@ const Header = ({ isDarkMode, toggleDarkMode }) => {
                   </Link>
                 ))}
               </div>
-              <div className="flex items-center justify-end">
+              <div className="flex items-center justify-start col-start-1 sm:col-start-4 sm:justify-end">
                 <button
                   onClick={toggleDarkMode}
                   className="rounded-md text-md font-medium"
@@ -80,8 +80,8 @@ const Header = ({ isDarkMode, toggleDarkMode }) => {
                   </div>
                 </button>
               </div>
-              <div className="-mr-2 flex sm:hidden justify-end">
-                <Disclosure.Button className="inline-flex items-center justify-center rounded-md bg-gray-100 dark:bg-gray-700 p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-500">
+              <div className="-mr-2 flex sm:hidden justify-end col-start-4">
+                <Disclosure.Button className="inline-flex items-center justify-center rounded-md bg-gray-200 dark:bg-gray-700 p-2 text-gray-400 hover:text-gray-500">
                   <span className="sr-only">Open main menu</span>
                   {open ? (
                     <XMarkIcon className="block h-6 w-6" aria-hidden="true" />

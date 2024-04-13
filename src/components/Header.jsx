@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Disclosure } from "@headlessui/react";
+import { Disclosure, Transition } from "@headlessui/react";
 import {
   Bars3Icon,
   XMarkIcon,
@@ -62,7 +62,7 @@ const Header = ({ isDarkMode, toggleDarkMode }) => {
                   className="rounded-md text-md font-medium"
                 >
                   <div
-                    className={`transition-transform duration-700 ease transform hover:scale-125 ${
+                    className={`transition-transform duration-700 ease-in-out transform hover:scale-125 ${
                       isDarkMode ? "" : "rotate-180"
                     }`}
                   >
@@ -73,7 +73,7 @@ const Header = ({ isDarkMode, toggleDarkMode }) => {
                       />
                     ) : (
                       <SunIcon
-                        className="block h-8 w-8 text-amber-500"
+                        className="block h-8 w-8 text-gray-800"
                         aria-hidden="true"
                       />
                     )}
@@ -81,7 +81,7 @@ const Header = ({ isDarkMode, toggleDarkMode }) => {
                 </button>
               </div>
               <div className="-mr-2 flex sm:hidden justify-end">
-                <Disclosure.Button className="inline-flex items-center justify-center rounded-md bg-white p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                <Disclosure.Button className="inline-flex items-center justify-center rounded-md bg-gray-100 dark:bg-gray-700 p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-500">
                   <span className="sr-only">Open main menu</span>
                   {open ? (
                     <XMarkIcon className="block h-6 w-6" aria-hidden="true" />
@@ -93,20 +93,32 @@ const Header = ({ isDarkMode, toggleDarkMode }) => {
             </div>
           </div>
 
-          <Disclosure.Panel className="sm:hidden">
-            <div className="space-y-1 pt-2 pb-3">
-              {pages.map((page) => (
-                <Disclosure.Button
-                  key={page.name}
-                  as={Link}
-                  to={page.link}
-                  className="block border-l-4 border-indigo-500 bg-indigo-50 py-2 pl-3 pr-4 text-base font-medium text-indigo-700"
-                >
-                  {page.name}
-                </Disclosure.Button>
-              ))}
-            </div>
-          </Disclosure.Panel>
+          <Transition
+            show={open}
+            enter="transition ease-out duration-100 transform"
+            enterFrom="opacity-0 scale-y-0"
+            enterTo="opacity-100 scale-y-100"
+            leave="transition ease-in duration-75 transform"
+            leaveFrom="opacity-100 scale-y-100"
+            leaveTo="opacity-0 scale-y-0"
+          >
+            <Disclosure.Panel
+              className={`sm:hidden ${open ? "scale-y-100" : "scale-y-0"}`}
+            >
+              <div className="space-y-1 pb-1">
+                {pages.map((page) => (
+                  <Disclosure.Button
+                    key={page.name}
+                    as={Link}
+                    to={page.link}
+                    className="block border-l-4 border-gray-900 dark:border-white bg-gray-200 dark:bg-gray-700 py-2 pl-3 pr-4 text-base font-medium text-gray-600 dark:text-gray-400"
+                  >
+                    {page.name}
+                  </Disclosure.Button>
+                ))}
+              </div>
+            </Disclosure.Panel>
+          </Transition>
         </>
       )}
     </Disclosure>

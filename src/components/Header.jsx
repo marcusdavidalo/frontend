@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import { Disclosure, Transition } from "@headlessui/react";
 import {
   Bars3Icon,
@@ -47,15 +47,22 @@ const Header = ({ isDarkMode, toggleDarkMode }) => {
               </div>
               <div className="hidden col-start-2 col-end-4 row-start-1 sm:ml-6 sm:col-start-2 sm:flex sm:justify-center sm:space-x-8 h-full">
                 {pages.map((page) => (
-                  <Link
+                  <NavLink
                     key={page.name}
                     to={page.link}
-                    className="inline-flex items-center border-b-2 border-transparent px-1 pt-1 text-lg font-medium text-gray-500 dark:text-gray-200 hover:border-gray-300 dark:hover:border-gray-600 hover:text-gray-700 dark:hover:text-gray-200"
+                    className={({ isActive }) =>
+                      `inline-flex items-center border-b-4 transition-all duration-200 ease-in-out ${
+                        isActive
+                          ? "border-indigo-500 text-indigo-600"
+                          : "border-transparent text-gray-500 dark:text-gray-200 hover:border-gray-300 dark:hover:border-gray-600 hover:text-gray-700 dark:hover:text-gray-200"
+                      } px-1 pt-1 text-lg font-medium leading-tight`
+                    }
                   >
                     {page.name}
-                  </Link>
+                  </NavLink>
                 ))}
               </div>
+
               <div className="flex items-center justify-start col-start-1 sm:col-start-4 sm:justify-end">
                 <button
                   onClick={toggleDarkMode}

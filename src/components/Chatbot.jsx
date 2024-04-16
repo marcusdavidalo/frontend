@@ -92,7 +92,7 @@ const Chatbot = () => {
   }
 
   return (
-    <div className="fixed bottom-0 right-0 m-6 bg-white dark:bg-gray-950 p-6 rounded-lg shadow-lg max-w-sm z-40">
+    <div className="fixed bottom-0 right-0 m-6 bg-white dark:bg-gray-950 border-b-4 border-r-4 border-gray-300 dark:border-gray-800 p-6 rounded-lg shadow-md dark:shadow-black/70 max-w-sm z-40">
       <div className="flex justify-start mx-2 mb-2">
         <p className="text-base text-gray-600 dark:text-gray-400 bg-gray-200 dark:bg-gray-800 px-2 rounded-md">
           Powered by{" "}
@@ -116,10 +116,10 @@ const Chatbot = () => {
         {responses.map((response, index) => (
           <div
             key={index}
-            className={`flex items-start space-x-3 p-3 m-2 max-w-96 rounded-lg ${
+            className={`flex items-start space-x-3 p-3 m-2 max-w-96 rounded-lg border-b-4 border-r-4 border-indigo-800/50 ${
               response.role === "assistant"
                 ? "bg-indigo-100 text-indigo-800"
-                : "bg-gray-200 dark:bg-gray-800 text-gray-800 dark:text-gray-200"
+                : "bg-gray-200 dark:bg-gray-800 text-gray-800 dark:text-gray-200 w-max flex-row-reverse"
             }`}
           >
             {response.role === "assistant" && (
@@ -140,7 +140,7 @@ const Chatbot = () => {
       <div className="flex items-center space-x-2">
         <InformationCircleIcon
           data-tooltip-id="disclaimerTooltip"
-          className="h-6 w-6 text-gray-700 dark:text-gray-300 cursor-pointer hover:scale-110"
+          className="h-6 w-6 text-gray-700  dark:text-gray-300 cursor-pointer hover:scale-110"
         />
         <Tooltip
           id="disclaimerTooltip"

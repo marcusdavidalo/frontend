@@ -12,7 +12,7 @@ const Section = ({
   onClick,
   isExternal,
 }) => (
-  <div className="bg-white dark:bg-gray-950 p-6 rounded-lg shadow-md transform transition duration-500 ease-in-out hover:scale-105">
+  <div className="bg-white dark:bg-gray-950 border-b-4 border-r-4 border-gray-300 dark:border-gray-800 p-6 rounded-lg shadow-md dark:shadow-black/70 transform transition duration-500 ease-in-out hover:scale-105">
     <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-200 mb-2">
       {title}
     </h2>

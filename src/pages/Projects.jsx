@@ -4,7 +4,7 @@ import useTitle from "../hooks/useTitle";
 import { ChevronDownIcon } from "@heroicons/react/24/solid";
 
 const ProjectCard = ({ title, description, link }) => (
-  <div className="bg-white dark:bg-gray-950 p-6 rounded-lg shadow-md transform transition duration-500 ease-in-out min-h-max hover:scale-105">
+  <div className="bg-white dark:bg-gray-950 border-b-4 border-r-4 border-gray-300 dark:border-gray-800 p-6 rounded-lg shadow-md transform transition duration-500 ease-in-out min-h-max hover:scale-105">
     <div className="mt-4">
       <h3 className="text-xl font-bold text-gray-900 dark:text-gray-200">
         {title}

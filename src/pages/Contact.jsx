@@ -6,12 +6,12 @@ const Contact = () => {
   useTitle("Contacts");
 
   return (
-    <div className="bg-gray-100 dark:bg-gray-900 min-h-max">
+    <div className="bg-gray-100 dark:bg-gray-900  min-h-max">
       <div className="max-w-7xl mx-auto py-16 px-4 sm:px-6 lg:px-8">
         <h1 className="text-4xl font-extrabold text-gray-900 dark:text-gray-200 mb-8">
           Contact Me
         </h1>
-        <div className="bg-white dark:bg-gray-950 p-8 rounded-lg shadow-md">
+        <div className="bg-white dark:bg-gray-950 border-b-4 border-r-4 border-gray-300 dark:border-gray-800 p-8 rounded-lg shadow-md ">
           <Formik
             initialValues={{ name: "", email: "", message: "" }}
             onSubmit={(values, { setSubmitting }) => {

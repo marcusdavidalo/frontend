@@ -3,8 +3,8 @@ import { Tooltip } from "react-tooltip";
 import Groq from "groq-sdk";
 import { ReactComponent as GroqLogo } from "../assets/chatbot/groq-seeklogo.svg";
 import Me from "../assets/home/Me.png";
-import { ChatBubbleLeftIcon, XMarkIcon } from "@heroicons/react/24/solid";
 import { InformationCircleIcon } from "@heroicons/react/24/outline";
+import ReactMarkdown from "react-markdown";
 
 const groq = new Groq({
   apiKey: process.env.REACT_APP_GROQ,
@@ -14,8 +14,8 @@ const groq = new Groq({
 const CodeAssist = () => {
   const [message, setMessage] = useState("");
   const [responses, setResponses] = useState([]);
-  const [isExpanded, setIsExpanded] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
+  const [charCount, setCharCount] = useState(0);
   const chatEndRef = useRef(null);
 
   const scrollToBottom = () => {
@@ -42,12 +42,12 @@ const CodeAssist = () => {
           content:
             "You are now acting as a programming assistant. You are designed to provide concise responses to inquiries about web development, providing only the requested information. If you do not have an answer for an inquiry, you will guide the user to the appropriate resources.",
         },
+        ...responses,
         {
           role: "assistant",
           content:
             "Hello! I'm your Programming Assistant. I operate using the Mixtral-8x7b-32768 model via GROQ. How may I assist you with your code today?",
         },
-        ...responses,
         {
           role: "user",
           content: message,
@@ -69,30 +69,8 @@ const CodeAssist = () => {
     ]);
   };
 
-  const handleExpand = () => {
-    setIsExpanded(true);
-    setResponses([
-      {
-        role: "assistant",
-        content:
-          "Hello! I'm your Programming Assistant. I operate using the Mixtral-8x7b-32768 model via GROQ. How may I assist you with your code today?",
-      },
-    ]);
-  };
-
-  if (!isExpanded) {
-    return (
-      <div
-        onClick={handleExpand}
-        className="fixed bottom-0 right-0 m-4 bg-indigo-600 p-2 rounded-full cursor-pointer shadow-md z-40"
-      >
-        <ChatBubbleLeftIcon className="h-10 w-10 text-white" />
-      </div>
-    );
-  }
-
   return (
-    <div className="fixed bottom-0 right-0 m-6 bg-white dark:bg-gray-950 border-b-4 border-r-4 border-gray-300 dark:border-gray-800 p-6 rounded-lg shadow-md dark:shadow-black/70 max-w-sm z-40">
+    <div className="flex flex-col justify-center items-center bg-white dark:bg-gray-950 border-x-8 border-gray-300 dark:border-gray-800 p-6 rounded-2xl max-w-full h-[80vh]">
       <div className="flex justify-start mx-2 mb-2">
         <p className="text-base text-gray-600 dark:text-gray-400 bg-gray-200 dark:bg-gray-800 px-2 rounded-md">
           Powered by{" "}
@@ -112,14 +90,14 @@ const CodeAssist = () => {
           </a>
         </p>
       </div>
-      <div className="overflow-y-auto max-h-72 min-h-72 mb-4">
+      <div className="overflow-x-hidden h-full w-full mb-4">
         {responses.map((response, index) => (
           <div
             key={index}
-            className={`flex items-start space-x-3 p-3 m-2 max-w-96 rounded-lg border-b-4 border-r-4 border-indigo-800/50 ${
+            className={`flex items-start space-x-3 p-3 m-2 rounded-lg border-b-4 border-r-4 border-indigo-800/50 ${
               response.role === "assistant"
                 ? "bg-indigo-100 text-indigo-800"
-                : "bg-gray-200 dark:bg-gray-800 text-gray-800 dark:text-gray-200 w-max flex-row-reverse"
+                : "bg-gray-200 dark:bg-gray-800 text-gray-800 dark:text-gray-200"
             }`}
           >
             {response.role === "assistant" && (
@@ -129,15 +107,15 @@ const CodeAssist = () => {
                 className="h-10 w-10 rounded-full"
               />
             )}
-            <p className="font-semibold text-base md:text-xl">
+            <ReactMarkdown className="font-semibold text-base md:text-lg">
               {response.content}
-            </p>
+            </ReactMarkdown>
           </div>
         ))}
         {isTyping && <div className="typing-animation">Arda is typing...</div>}
         <div ref={chatEndRef} />
       </div>
-      <div className="flex items-center space-x-2">
+      <div className="flex w-full items-center space-x-2">
         <InformationCircleIcon
           data-tooltip-id="disclaimerTooltip"
           className="h-6 w-6 text-gray-700  dark:text-gray-300 cursor-pointer hover:scale-110"
@@ -146,24 +124,34 @@ const CodeAssist = () => {
           id="disclaimerTooltip"
           place="top"
           effect="solid"
-          className="max-w-lg rounded-md font-mono"
+          className="max-w-lg rounded-md font-mono z-40"
         >
           Please Note: This AI Assistant is continuously being refined and may
           occasionally provide inaccurate details about my background and
           professional endeavors. Your understanding is appreciated.
         </Tooltip>
-        <input
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" && !isTyping) {
-              sendMessage();
-            }
-          }}
-          className="bg-white dark:bg-gray-800 text-black dark:text-white flex-1 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-600"
-          placeholder="Type your message..."
-          disabled={isTyping}
-        />
+        <div className="relative w-full">
+          <textarea
+            value={message}
+            onChange={(e) => {
+              if (e.target.value.length <= 12000) {
+                setMessage(e.target.value);
+                setCharCount(e.target.value.length); // Update the character count
+              }
+            }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !isTyping) {
+                sendMessage();
+              }
+            }}
+            className="w-full bg-white dark:bg-gray-800 text-black dark:text-white flex-1 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-600"
+            placeholder="Type your message..."
+            disabled={isTyping}
+          />
+          <p className="absolute bottom-2 right-2 text-base text-gray-500">
+            {charCount}/12000
+          </p>
+        </div>
         <button
           onClick={sendMessage}
           className="inline-flex items-center justify-center px-4 py-2 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700"
@@ -172,12 +160,6 @@ const CodeAssist = () => {
           Send
         </button>
       </div>
-      <button
-        onClick={() => setIsExpanded(false)}
-        className="absolute top-0 right-0 m-1 p-2 text-gray-700 dark:text-gray-300 hover:text-gray-900"
-      >
-        <XMarkIcon className="h-6 w-6" />
-      </button>
     </div>
   );
 };

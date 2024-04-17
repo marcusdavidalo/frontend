@@ -14,18 +14,18 @@ const Footer = () => {
             target="_blank"
             rel="noopener noreferrer"
           >
-            <FaGithub className="text-2xl hover:text-gray-700 dark:hover:text-gray-300 transition-colors" />
+            <FaGithub className="text-2xl hover:text-gray-700 dark:hover:text-gray-100 transition-colors" />
           </a>
           <a
             href="https://www.linkedin.com/in/mdalo/"
             target="_blank"
             rel="noopener noreferrer"
           >
-            <FaLinkedin className="text-2xl hover:text-gray-700 dark:hover:text-gray-300 transition-colors" />
+            <FaLinkedin className="text-2xl hover:text-gray-700 dark:hover:text-gray-100 transition-colors" />
           </a>
           {/* emailing needs to be improved */}
           <a href="mailto:marcusdavidalo.work@gmail.com">
-            <FaEnvelope className="text-2xl hover:text-gray-700 dark:hover:text-gray-300 transition-colors" />
+            <FaEnvelope className="text-2xl hover:text-gray-700 dark:hover:text-gray-100 transition-colors" />
           </a>
         </div>
       </div>

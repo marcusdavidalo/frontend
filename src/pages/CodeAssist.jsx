@@ -46,14 +46,14 @@ const CodeAssist = () => {
         {
           role: "assistant",
           content:
-            "Hello! I'm your Programming Assistant. I operate using the Mixtral-8x7b-32768 model via GROQ. How may I assist you with your code today?",
+            "Hello! I'm your Programming Assistant. I operate using the llama3-70b-8192 model via GROQ. How may I assist you with your code today?",
         },
         {
           role: "user",
           content: message,
         },
       ],
-      model: "mixtral-8x7b-32768",
+      model: "llama3-70b-8192",
       temperature: 0.5,
       max_tokens: 768,
       top_p: 0.75,

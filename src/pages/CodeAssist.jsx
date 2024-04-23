@@ -79,12 +79,12 @@ const CodeAssist = () => {
   };
 
   const components = {
-    code: ({ node, inline, children, value, ...props }) => {
+    code: ({ node, inline, children, ...props }) => {
       return !inline ? (
         <div className="relative rounded-md shadow-sm font-mono font-normal text-base">
           <button
             className="absolute right-0 top-0 m-2 text-sm text-white bg-blue-600 rounded px-2 py-1"
-            onClick={() => copy(value)}
+            onClick={() => copy(children)}
           >
             Copy
           </button>

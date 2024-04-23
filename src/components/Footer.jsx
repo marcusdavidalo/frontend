@@ -1,13 +1,22 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import { FaGithub, FaLinkedin, FaEnvelope } from "react-icons/fa";
 
 const Footer = () => {
   return (
     <footer className="bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row justify-between items-center">
-        <p className="text-lg">
-          &copy; 2023 Marcus David Alo. All rights reserved.
-        </p>
+        <div>
+          <p className="text-lg">
+            &copy; 2023 Marcus David Alo. All rights reserved.
+          </p>
+          <Link
+            className="text-gray-600 dark:text-gray-400 underline"
+            to="/codeassist"
+          >
+            To Code Assist
+          </Link>
+        </div>
         <div className="flex space-x-4 mt-4 sm:mt-0">
           <a
             href="https://github.com/marcusdavidalo"

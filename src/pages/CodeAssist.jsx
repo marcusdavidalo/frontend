@@ -49,13 +49,13 @@ const CodeAssist = () => {
         {
           role: "system",
           content:
-            "You are now acting as a programming assistant. You are designed to provide concise responses to inquiries about web development, providing only the requested information. If you do not have an answer for an inquiry, you will guide the user to the appropriate resources.",
+            "You will now act and introduce yourself as Arda, A Chatbot code assistant running on llama3-70b-8192 model via GROQ on Marcus David Alo's portfolio website. Arda is designed to respond concisely to inquiries about Coding mostly and sometimes Marcus if inquired about, providing only the requested information. If Arda does not have an answer for an inquiry, it will guide the user to the contact page. Arda may still fulfill general inquiries mainly on programming questions and tasks, but not limited to it. \n\nMarcus David Alo is a 24-year-old beginner web developer from Cebu, Philippines. His expertise lies in MERN tech-stack. He is currently self-studying AI and Python, and has explored Expo after discovering React Native. \n\nMarcus completed a web development bootcamp at Kodego and pursued Computer Science at AMA Computer College Cebu in which he droppped out because Computer Science was being treated like IT and learned nothing related to it. He enjoys staying updated with the latest technology trends, experimenting with AI, and exploring nature. His preferred programming language is JavaScript. He has no work experience aside from his Bootcamp projects and Pet Projects.",
         },
         ...responses,
         {
           role: "assistant",
           content:
-            "Hello! I'm your Programming Assistant. I operate using the llama3-70b-8192 model via GROQ. How may I assist you with your code today?",
+            "Hello! I'm your Programming Assistant. I am using the llama3-70b-8192 model via GROQ. How may I assist you with your code today?",
         },
         {
           role: "user",
@@ -166,34 +166,44 @@ const CodeAssist = () => {
           occasionally provide inaccurate details about my background and
           professional endeavors. Your understanding is appreciated.
         </Tooltip>
-        <div className="relative w-full">
+        <div className="flex justify-center items-center relative w-full">
           <textarea
             value={message}
             onChange={(e) => {
               if (e.target.value.length <= 12000) {
                 setMessage(e.target.value);
-                setCharCount(e.target.value.length); // Update the character count
+                setCharCount(e.target.value.length);
               }
             }}
             onKeyDown={(e) => {
-              if (e.key === "Enter" && !isTyping) {
+              if (e.key === "Enter" && !e.shiftKey && !isTyping) {
+                e.preventDefault();
                 sendMessage();
               }
             }}
-            className="w-full bg-white dark:bg-gray-800 text-black dark:text-white flex-1 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-600"
+            className="w-full bg-white dark:bg-gray-800 text-black dark:text-white flex-1 px-2 py-2 border min-h-16 border-gray-300 rounded-md"
             disabled={isTyping}
+            placeholder="Type your message here..."
+            rows={3}
+            maxLength={12000}
+            autoComplete="on"
+            spellCheck="true"
+            autoCorrect="false"
+            autoCapitalize="false"
+            wrap="soft"
           />
-          <p className="absolute bottom-2 right-2 text-base text-gray-500">
+
+          <p className="absolute bottom-0 left-2 text-lg text-gray-700 dark:text-gray-300">
             {charCount}/12000
           </p>
+          <button
+            onClick={sendMessage}
+            className="inline-flex absolute right-2 items-center justify-center px-4 py-2 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700"
+            disabled={isTyping}
+          >
+            Send
+          </button>
         </div>
-        <button
-          onClick={sendMessage}
-          className="inline-flex items-center justify-center px-4 py-2 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700"
-          disabled={isTyping}
-        >
-          Send
-        </button>
       </div>
     </div>
   );

@@ -64,7 +64,7 @@ const Arda = () => {
       ],
       model: "llama3-70b-8192",
       temperature: 0.5,
-      max_tokens: 768,
+      max_tokens: 8192,
       top_p: 0.75,
     });
 
@@ -100,6 +100,10 @@ const Arda = () => {
       );
     },
   };
+
+  useEffect(() => {
+    setCharCount(message.length);
+  }, [message]);
 
   return (
     <div className="flex flex-col justify-center items-center bg-white dark:bg-gray-950 border-x-8 border-gray-300 dark:border-gray-800 p-6 rounded-2xl max-w-full h-[80vh]">
@@ -179,6 +183,7 @@ const Arda = () => {
               if (e.key === "Enter" && !e.shiftKey && !isTyping) {
                 e.preventDefault();
                 sendMessage();
+                setCharCount(e.target.value.length);
               }
             }}
             className="w-full bg-white dark:bg-gray-800 text-black dark:text-white flex-1 px-2 py-2 border min-h-16 border-gray-300 rounded-md"

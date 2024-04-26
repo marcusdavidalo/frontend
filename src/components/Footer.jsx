@@ -12,9 +12,9 @@ const Footer = () => {
           </p>
           <Link
             className="text-gray-600 dark:text-gray-400 underline"
-            to="/codeassist"
+            to="/arda"
           >
-            To Code Assist
+            To AI Assistant
           </Link>
         </div>
         <div className="flex space-x-4 mt-4 sm:mt-0">

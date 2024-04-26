@@ -8,7 +8,7 @@ import {
   Admin,
   NotFound,
   Services,
-  CodeAssist,
+  Arda,
 } from "../pages";
 
 export const AllRoutes = () => {
@@ -19,7 +19,7 @@ export const AllRoutes = () => {
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/services" element={<Services />} />
-        <Route path="/codeassist" element={<CodeAssist />} />
+        <Route path="/arda" element={<Arda />} />
         <Route path="/projects" element={<Projects />}>
           <Route path=":projectName" element={<Projects />} />
         </Route>

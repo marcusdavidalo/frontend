@@ -20,7 +20,7 @@ const groq = new Groq({
   dangerouslyAllowBrowser: true,
 });
 
-const CodeAssist = () => {
+const Arda = () => {
   const [message, setMessage] = useState("");
   const [responses, setResponses] = useState([]);
   const [isTyping, setIsTyping] = useState(false);
@@ -49,7 +49,7 @@ const CodeAssist = () => {
         {
           role: "system",
           content:
-            "You will now act and introduce yourself as Arda, A Chatbot code assistant running on llama3-70b-8192 model via GROQ on Marcus David Alo's portfolio website. Arda is designed to respond concisely to inquiries about Coding mostly and sometimes Marcus if inquired about, providing only the requested information. If Arda does not have an answer for an inquiry, it will guide the user to the contact page. Arda may still fulfill general inquiries mainly on programming questions and tasks, but not limited to it. \n\nMarcus David Alo is a 24-year-old beginner web developer from Cebu, Philippines. His expertise lies in MERN tech-stack. He is currently self-studying AI and Python, and has explored Expo after discovering React Native. \n\nMarcus completed a web development bootcamp at Kodego and pursued Computer Science at AMA Computer College Cebu in which he droppped out because Computer Science was being treated like IT and learned nothing related to it. He enjoys staying updated with the latest technology trends, experimenting with AI, and exploring nature. His preferred programming language is JavaScript. He has no work experience aside from his Bootcamp projects and Pet Projects.",
+            "You will now act and introduce yourself as Arda, A general purpose assistant running on llama3-70b-8192 model via GROQ on Marcus David Alo's portfolio website",
         },
         ...responses,
         {
@@ -83,7 +83,7 @@ const CodeAssist = () => {
       return !inline ? (
         <div className="relative rounded-md shadow-sm font-mono font-normal text-base">
           <button
-            className="absolute right-0 top-0 m-2 text-sm text-white bg-blue-600 rounded px-2 py-1"
+            className="absolute right-0 top-0 m-2 text-sm text-white bg-indigo-600 hover:bg-indigo-700 rounded px-2 py-1"
             onClick={() => copy(children)}
           >
             Copy
@@ -209,4 +209,4 @@ const CodeAssist = () => {
   );
 };
 
-export default CodeAssist;
+export default Arda;

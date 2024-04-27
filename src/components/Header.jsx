@@ -12,6 +12,7 @@ const Header = ({ isDarkMode, toggleDarkMode }) => {
   const pages = [
     { name: "Home", link: "/" },
     { name: "About", link: "/about" },
+    { name: "AI", link: "/arda" },
     { name: "Projects", link: "/projects" },
     { name: "Contact", link: "/contact" },
   ];
@@ -50,15 +51,25 @@ const Header = ({ isDarkMode, toggleDarkMode }) => {
                   <NavLink
                     key={page.name}
                     to={page.link}
-                    className={({ isActive }) =>
-                      `inline-flex items-center border-b-4 transition-all duration-200 ease-in-out ${
-                        isActive
-                          ? "border-indigo-500 text-indigo-600"
-                          : "border-transparent text-gray-500 dark:text-gray-200 hover:border-gray-300 dark:hover:border-gray-600 hover:text-gray-700 dark:hover:text-gray-200"
-                      } px-1 pt-1 text-lg font-medium leading-tight`
-                    }
+                    className={({ isActive }) => {
+                      if (page.name === "AI") {
+                        return `inline-flex items-center border-b-4 transition-all duration-200 ease-in-out ${
+                          isActive
+                            ? "border-pink-500 text-pink-600" // custom styling for AI Link
+                            : "border-transparent text-gray-500 dark:text-gray-200 hover:border-gray-300 dark:hover:border-gray-600 hover:text-gray-700 dark:hover:text-gray-200"
+                        } px-1 pt-1 text-2xl font-semibold leading-tight`;
+                      } else {
+                        return `inline-flex items-center border-b-4 transition-all duration-200 ease-in-out ${
+                          isActive
+                            ? "border-indigo-500 text-indigo-600"
+                            : "border-transparent text-gray-500 dark:text-gray-200 hover:border-gray-300 dark:hover:border-gray-600 hover:text-gray-700 dark:hover:text-gray-200"
+                        } px-1 pt-1 text-lg font-medium leading-tight`;
+                      }
+                    }}
                   >
-                    {page.name}
+                    {({ isActive }) =>
+                      isActive && page.name === "AI" ? "Arda" : page.name
+                    }
                   </NavLink>
                 ))}
               </div>

@@ -32,7 +32,8 @@ const Projects = () => {
   const [projects, setProjects] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [sort, setSort] = useState({ field: "updated_at", direction: "asc" });
-  const projectsPerPage = 6;
+  const [searchTerm, setSearchTerm] = useState("");
+  const [projectsPerPage, setProjectsPerPage] = useState(6);
 
   useEffect(() => {
     axios
@@ -45,7 +46,17 @@ const Projects = () => {
       });
   }, []);
 
-  const sortedProjects = [...projects].sort((a, b) => {
+  const filteredProjects = projects.filter((project) => {
+    if (!project.name && !project.description) return false;
+    return (
+      (project.name &&
+        project.name.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (project.description &&
+        project.description.toLowerCase().includes(searchTerm.toLowerCase()))
+    );
+  });
+
+  const sortedProjects = [...filteredProjects].sort((a, b) => {
     const isAsc = sort.direction === "asc";
     return (
       a[sort.field].localeCompare(b[sort.field], "en", { numeric: true }) *
@@ -61,7 +72,11 @@ const Projects = () => {
   );
 
   const pageNumbers = [];
-  for (let i = 1; i <= Math.ceil(projects.length / projectsPerPage); i++) {
+  for (
+    let i = 1;
+    i <= Math.ceil(sortedProjects.length / projectsPerPage);
+    i++
+  ) {
     pageNumbers.push(i);
   }
 
@@ -78,6 +93,10 @@ const Projects = () => {
   };
 
   const handlePageChange = (pageNumber) => setCurrentPage(pageNumber);
+
+  const handleProjectsPerPageChange = (e) => {
+    setProjectsPerPage(e.target.value);
+  };
 
   useTitle("Projects");
 
@@ -149,6 +168,22 @@ const Projects = () => {
               <span className="flex items-center space-x-1 px-3 py-2 bg-white dark:bg-gray-950 dark:text-gray-200 rounded-md shadow-sm">
                 Total projects: {projects.length}
               </span>
+              <input
+                type="search"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder="Search projects"
+                className="px-3 py-2 bg-white dark:bg-gray-950 dark:text-gray-200 rounded-md shadow-sm"
+              />
+              <select
+                value={projectsPerPage}
+                onChange={handleProjectsPerPageChange}
+                className="px-3 py-2 bg-white dark:bg-gray-950 dark:text-gray-200 rounded-md shadow-sm"
+              >
+                <option value="3">3 per page</option>
+                <option value="6">6 per page</option>
+                <option value="9">9 per page</option>
+              </select>
             </div>
             <div className="flex space-x-2">
               <button
@@ -176,13 +211,15 @@ const Projects = () => {
               <button
                 onClick={() =>
                   handlePageChange(
-                    currentPage < Math.ceil(projects.length / projectsPerPage)
+                    currentPage <
+                      Math.ceil(sortedProjects.length / projectsPerPage)
                       ? currentPage + 1
                       : currentPage
                   )
                 }
                 disabled={
-                  currentPage === Math.ceil(projects.length / projectsPerPage)
+                  currentPage ===
+                  Math.ceil(sortedProjects.length / projectsPerPage)
                 }
                 className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
               >

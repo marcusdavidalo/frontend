@@ -5,6 +5,7 @@ import { ReactComponent as GroqLogo } from "../assets/chatbot/groq-seeklogo.svg"
 import Me from "../assets/home/Me.png";
 import { ChatBubbleLeftIcon, XMarkIcon } from "@heroicons/react/24/solid";
 import { InformationCircleIcon } from "@heroicons/react/24/outline";
+import { useLocation } from "react-router-dom";
 
 const groq = new Groq({
   apiKey: process.env.REACT_APP_GROQ,
@@ -12,6 +13,8 @@ const groq = new Groq({
 });
 
 const Chatbot = () => {
+  const location = useLocation();
+  const isArdaRoute = location.pathname === "/arda";
   const [message, setMessage] = useState("");
   const [responses, setResponses] = useState([]);
   const [isExpanded, setIsExpanded] = useState(false);
@@ -90,6 +93,8 @@ const Chatbot = () => {
       </div>
     );
   }
+
+  if (isArdaRoute) return null;
 
   return (
     <div className="fixed bottom-0 right-0 m-6 bg-white dark:bg-gray-950 border-b-4 border-r-4 border-gray-300 dark:border-gray-800 p-6 rounded-lg shadow-md dark:shadow-black/70 max-w-sm z-40">

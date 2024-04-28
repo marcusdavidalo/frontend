@@ -3,9 +3,12 @@ import Layout from "./components/Layout";
 import Loader from "./components/Loader";
 import Chatbot from "./components/Chatbot";
 import { AllRoutes } from "./routes/AllRoutes";
+import { useLocation } from "react-router-dom";
 import "./App.css";
 
 function App() {
+  const location = useLocation();
+  const isArdaRoute = location.pathname === "/arda";
   const [isDarkMode, setIsDarkMode] = useState(() => {
     const savedIsDarkMode = localStorage.getItem("isDarkMode");
     return savedIsDarkMode !== null ? JSON.parse(savedIsDarkMode) : false;
@@ -35,7 +38,7 @@ function App() {
     >
       <Layout isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode}>
         <Loader />
-        <Chatbot />
+        {!isArdaRoute && <Chatbot />}
         <AllRoutes />
       </Layout>
     </div>

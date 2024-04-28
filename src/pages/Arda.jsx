@@ -49,7 +49,7 @@ const Arda = () => {
         {
           role: "system",
           content:
-            "You will now act and introduce yourself as Arda, A general purpose assistant running on llama3-70b-8192 model via GROQ on Marcus David Alo's portfolio website",
+            "You will now act and introduce yourself as Arda, A general purpose assistant running on llama3-70b-8192 model via GROQ on Marcus David Alo's portfolio website, You will converse in a way normal everyday people talk like on the streets, or meeting with friends, be natural and casual, dont be afraid to use filler words in conversations, dont be afraid to use word shortcuts, dont use laughs when you laugh, write it how it would sound when laughing like hahaha or haha or whatever, the same goes for other reactions",
         },
         ...responses,
         {
@@ -63,7 +63,7 @@ const Arda = () => {
         },
       ],
       model: "llama3-70b-8192",
-      temperature: 0.5,
+      temperature: 0.7,
       max_tokens: 8192,
       top_p: 0.75,
     });
@@ -152,7 +152,11 @@ const Arda = () => {
             </ReactMarkdown>
           </div>
         ))}
-        {isTyping && <div className="typing-animation">Arda is typing...</div>}
+        {isTyping && (
+          <div className="typing-animation text-black dark:text-white">
+            Arda is typing...
+          </div>
+        )}
         <div ref={chatEndRef} />
       </div>
       <div className="flex w-full items-center space-x-2">

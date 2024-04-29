@@ -6,6 +6,8 @@
 
 * {
   transition: all 0.5s ease-in-out;
+  letter-spacing: 1.1px;
+  line-height: 1.5rem;
 }
 
 body {
@@ -18,4 +20,10 @@ body {
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
+}
+
+textarea:focus {
+  outline: none;
+  border-color: #4299e1;
+  box-shadow: 0 0 0 0px rgba(66, 153, 225, 0.5);
 }

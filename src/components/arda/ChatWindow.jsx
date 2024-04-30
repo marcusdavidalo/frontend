@@ -22,6 +22,20 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
 
   useEffect(scrollToBottom, [currentConversation]);
 
+  const getCurrentTimeLocal = () => {
+    const date = new Date();
+    return date.toLocaleTimeString();
+  };
+
+  const getCurrentTimeUTC = () => {
+    const date = new Date();
+    return date.toUTCString();
+  };
+
+  const getUserTimezone = () => {
+    return Intl.DateTimeFormat().resolvedOptions().timeZone;
+  };
+
   const sendMessage = async () => {
     if (message.trim() === "") return;
 
@@ -38,19 +52,26 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
     setMessage("");
     setRows(1);
 
+    const currentTimeLocal = getCurrentTimeLocal();
+    const currentTimeUTC = getCurrentTimeUTC();
+    const userTimezone = getUserTimezone();
+
     const chatCompletion = await groq.chat.completions.create({
       messages: [
         {
           role: "system",
+          content: `Additional Information: \nCurrent Local Time: ${currentTimeLocal}\nCurrent Time (UTC): ${currentTimeUTC}\nUser's Timezone: ${userTimezone}`,
+        },
+        {
+          role: "system",
+          content: `You will respond in a concise but polite way, only respond to what is being asked, no need for additional information. dont be creepy`,
+        },
+        {
+          role: "system",
           content:
-            "You will now act and introduce yourself as Arda, A general purpose assistant running on llama3-70b-8192 model via GROQ on Marcus David Alo's portfolio website, You will converse in a way normal everyday people talk like on the streets, or meeting with friends, be natural and casual, dont be afraid to use filler words in conversations, dont be afraid to use word shortcuts, dont use laughs when you laugh, write it how it would sound when laughing like hahaha or haha or whatever, the same goes for other reactions, be polite, only respond in the language the person is using to talk to you.",
+            "You will now act and introduce yourself as Arda, A general purpose assistant running on llama3-70b-8192 model via GROQ on Marcus David Alo's portfolio website, You will converse in a casual way normal everyday people talk like on the streets, or meeting with or greeting strangers, be natural and casual, dont be afraid to use filler words in conversations, dont be afraid to use word shortcuts, be polite, dont be overactive, only respond in the language the person is using to talk to you.",
         },
         ...updatedConversation.messages,
-        {
-          role: "assistant",
-          content:
-            "Hello! I'm your Programming Assistant. I am using the llama3-70b-8192 model via GROQ. How may I assist you with your code today?",
-        },
         {
           role: "user",
           content: message,
@@ -183,8 +204,8 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
             className="max-w-lg rounded-md font-mono z-40"
           >
             Please Note: This AI Assistant is continuously being refined and may
-            occasionally provide inaccurate details about my background and
-            professional endeavors. Your understanding is appreciated.
+            occasionally provide inaccurate information, please review the AI's
+            answers carefully
           </Tooltip>
           <div className="flex justify-center items-center relative w-full">
             <div className="flex justify-center items-center relative w-full">

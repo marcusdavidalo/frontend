@@ -36,7 +36,7 @@ const Sidebar = ({
         </h2>
         <button
           onClick={onNewConversation}
-          className="inline-flex items-center justify-center mx-2 h-8 w-8 border border-transparent text-base font-medium rounded-full text-white bg-green-600 hover:bg-green-700"
+          className="inline-flex items-center justify-center mx-2 h-6 w-6 border border-transparent text-4xl text-center font-medium rounded-full text-white bg-green-600 hover:bg-green-700"
           title="New Conversation"
         >
           +
@@ -51,9 +51,14 @@ const Sidebar = ({
             }`}
             onClick={() => onConversationClick(conversation)}
           >
-            {/* Render a preview of the conversation */}
-            <span className={`px-2 ${isCollapsed ? "hidden" : ""}`}>
-              {conversation.name || `Conversation ${index + 1}`}
+            <span
+              className={`px-2 ${isCollapsed ? "hidden" : ""}`}
+              title={conversation.name || `Conversation ${index + 1}`}
+            >
+              {conversation.name
+                ? conversation.name.substring(0, 15) +
+                  (conversation.name.length > 15 ? "..." : "")
+                : `Conversation ${index + 1}`}
             </span>
             <div className={`${isCollapsed ? "hidden" : ""}`}>
               <button

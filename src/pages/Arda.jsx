@@ -23,29 +23,12 @@ const Arda = () => {
     }
   }, []);
 
-  const saveConversation = () => {
-    localStorage.setItem("conversations", JSON.stringify(savedConversations));
+  const saveConversation = (conversations) => {
+    localStorage.setItem("conversations", JSON.stringify(conversations));
   };
 
   const loadConversation = (conversation) => {
     setCurrentConversation(conversation);
-  };
-
-  const deleteConversation = (index) => {
-    const updatedConversations = [...savedConversations];
-    updatedConversations.splice(index, 1);
-    setSavedConversations(updatedConversations);
-    saveConversation();
-  };
-
-  const renameConversation = (index) => {
-    const newName = prompt("Enter the new name for the conversation:");
-    if (newName !== null && newName.trim() !== "") {
-      const updatedConversations = [...savedConversations];
-      updatedConversations[index].name = newName;
-      setSavedConversations(updatedConversations);
-      saveConversation();
-    }
   };
 
   const updateCurrentConversation = (updatedConversation) => {
@@ -56,15 +39,34 @@ const Arda = () => {
     );
 
     if (conversationIndex !== -1) {
-      // Update the existing conversation
       const updatedSavedConversations = [...savedConversations];
       updatedSavedConversations[conversationIndex] = updatedConversation;
       setSavedConversations(updatedSavedConversations);
-      saveConversation();
+      saveConversation(updatedSavedConversations);
     } else {
-      // Add a new conversation if it doesn't exist yet
-      setSavedConversations([...savedConversations, updatedConversation]);
-      saveConversation();
+      const newSavedConversations = [
+        ...savedConversations,
+        updatedConversation,
+      ];
+      setSavedConversations(newSavedConversations);
+      saveConversation(newSavedConversations);
+    }
+  };
+
+  const deleteConversation = (index) => {
+    const updatedConversations = [...savedConversations];
+    updatedConversations.splice(index, 1);
+    setSavedConversations(updatedConversations);
+    saveConversation(updatedConversations);
+  };
+
+  const renameConversation = (index) => {
+    const newName = prompt("Enter the new name for the conversation:");
+    if (newName !== null && newName.trim() !== "") {
+      const updatedConversations = [...savedConversations];
+      updatedConversations[index].name = newName;
+      setSavedConversations(updatedConversations);
+      saveConversation(updatedConversations);
     }
   };
 

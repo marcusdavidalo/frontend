@@ -3,6 +3,7 @@ import Groq from "groq-sdk";
 import Sidebar from "../components/arda/Sidebar";
 import ChatWindow from "../components/arda/ChatWindow";
 import { v4 as uuidv4 } from "uuid";
+import useTitle from "../hooks/useTitle";
 
 const groq = new Groq({
   apiKey: process.env.REACT_APP_GROQ,
@@ -73,6 +74,8 @@ const Arda = () => {
   const startNewConversation = () => {
     setCurrentConversation({ id: uuidv4(), messages: [] });
   };
+
+  useTitle("Arda");
 
   return (
     <div className="flex h-screen w-full dark:bg-gray-900">

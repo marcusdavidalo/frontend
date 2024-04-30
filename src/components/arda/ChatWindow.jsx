@@ -36,6 +36,7 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
     setIsTyping(true);
 
     setMessage("");
+    setRows(1);
 
     const chatCompletion = await groq.chat.completions.create({
       messages: [

@@ -13,6 +13,11 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
   const [charCount, setCharCount] = useState(0);
   const chatEndRef = useRef(null);
   const [rows, setRows] = useState(1);
+  const [tone, setTone] = useState("Casual");
+
+  const handleToneChange = (e) => {
+    setTone(e.target.value);
+  };
 
   const scrollToBottom = () => {
     if (currentConversation.length > 0) {
@@ -64,12 +69,11 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
         },
         {
           role: "system",
-          content: `You will respond in a concise but polite way, only respond to what is being asked, no need for additional information. do not be creepy`,
+          content: `You will respond in a ${tone} tone, and only respond to what is being asked, no need for additional information. do not be creepy`,
         },
         {
           role: "system",
-          content:
-            "You will now act and introduce yourself as Arda, A general purpose assistant running on llama3-70b-8192 model via GROQ on Marcus David Alo's portfolio website, You will converse in a casual but still professional way, like meeting with or greeting strangers, be natural, dont be afraid to use filler words in conversations, dont be afraid to use shortcuts, be polite, dont be overwhelming, only respond in the language the person is using to talk to you.",
+          content: `You will now act and introduce yourself as Arda, an AI on Marcus David Alo's portfolio website, You will converse in a ${tone} tone or persona, casual, but still professional way, like meeting with or greeting strangers, be natural, dont be afraid to use filler words in conversations, dont be afraid to use shortcuts, be polite, dont be overwhelming, only respond in the language the person is using to talk to you.`,
         },
         ...updatedConversation.messages,
         {
@@ -134,7 +138,15 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
   }, [message]);
 
   return (
-    <div className="flex w-full h-screen dark:bg-gray-900">
+    <div className="relative flex w-full h-screen dark:bg-gray-900">
+      <input
+        type="text"
+        value={tone}
+        onChange={handleToneChange}
+        maxLength={40}
+        placeholder="AI Tone"
+        className="absolute top-2 left-2 h-10 w-40 mr-2 px-2 py-1 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 outline-none inset-0 border-none resize-none shadow-none border rounded-full"
+      />
       <div className="flex flex-col justify-center items-center bg-white dark:bg-gray-950 p-6 rounded-l-2xl w-full">
         <div className="flex justify-start mx-2 mb-2">
           <p className="text-base text-gray-600 dark:text-gray-400 bg-gray-200 dark:bg-gray-800 px-2 rounded-md">

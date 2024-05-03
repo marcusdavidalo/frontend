@@ -86,9 +86,10 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
       if (conversationHistoryStr.length > 8000) {
         let startIndex = conversationHistoryStr.length - 8000;
         conversationHistoryStr = conversationHistoryStr.substring(startIndex);
-        conversationHistory = conversationHistoryStr
-          .split(" ")
-          .map((content) => ({ role: "user", content }));
+        // Keep conversationHistory as an array of message objects
+        conversationHistory = conversationHistory.filter((msg) =>
+          conversationHistoryStr.includes(msg.content)
+        );
       }
 
       const updatedConversation = {
@@ -301,16 +302,6 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
         placeholder="Tone"
         className="absolute text-justyify text-center top-2 left-2 h-10 w-12 focus:w-40 mr-2 px-2 py-1 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 outline-none inset-0 border-none resize-none shadow-none border rounded-full"
       />
-      {/* model options selector for future*/}
-      {/* <div className="absolute text-justyify text-center top-2 right-2 h-10 w-12 focus:w-40 mr-2 px-2 py-1 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 outline-none inset-0 border-none resize-none shadow-none border rounded-full">
-          <select>
-            <option value="llama3-70b-8192">Llama 70B 3.0</option>
-            <option value="llama3-8b-8192">Llama 8B 3.0</option>
-            <option value="mixtral-8x7b-32768">Mixtral</option>
-            <option value="gemma-7b-it">Gemma</option>
-            <option value="llama2-70b-4096">Llama 2.0</option>
-          </select>
-        </div> */}
       <div className="flex flex-col justify-center items-center bg-white dark:bg-gray-950 p-4 rounded-l-2xl w-full">
         <div className="flex justify-start mx-2 mb-2">
           <p className="text-base text-gray-600 dark:text-gray-400 bg-gray-200 dark:bg-gray-800 px-2 rounded-md">

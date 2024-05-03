@@ -281,7 +281,10 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
   useEffect(() => {
     if (chatWindowRef.current) {
       const scrollHeight = chatWindowRef.current.scrollHeight;
-      chatWindowRef.current.scrollTo(0, scrollHeight);
+      chatWindowRef.current.scrollTo(0, scrollHeight, { behavior: "smooth" });
+      document
+        .querySelector("#chatWindow")
+        .scrollIntoView({ behavior: "smooth" });
     }
   }, [currentConversation.messages]);
 

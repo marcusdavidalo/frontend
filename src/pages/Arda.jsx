@@ -100,6 +100,7 @@ const Arda = () => {
 
   const startNewConversation = () => {
     setCurrentConversation({ id: uuidv4(), messages: [] });
+    scrollToChatWindow();
   };
 
   useTitle("Arda");

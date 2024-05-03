@@ -17,6 +17,7 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
   const [tone, setTone] = useState("Normal");
   const [editingMessage, setEditingMessage] = useState(null);
   const [editedMessage, setEditedMessage] = useState("");
+  const chatWindowRef = useRef(null);
 
   const handleDelete = useCallback(
     (index) => {
@@ -43,7 +44,7 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
 
   const scrollToBottom = () => {
     if (currentConversation.length > 0) {
-      chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+      chatEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
   };
 
@@ -277,8 +278,18 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
     setCharCount(message.length);
   }, [message]);
 
+  useEffect(() => {
+    if (chatWindowRef.current) {
+      const scrollHeight = chatWindowRef.current.scrollHeight;
+      chatWindowRef.current.scrollTo(0, scrollHeight);
+    }
+  }, [currentConversation.messages]);
+
   return (
-    <div className="relative flex w-full h-screen dark:bg-gray-900">
+    <div
+      className="relative flex w-full h-screen overflow-auto dark:bg-gray-900"
+      id="chatWindow"
+    >
       <input
         type="text"
         value={tone === "Normal" ? "" : tone}
@@ -289,14 +300,14 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
       />
       {/* model options selector for future*/}
       {/* <div className="absolute text-justyify text-center top-2 right-2 h-10 w-12 focus:w-40 mr-2 px-2 py-1 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 outline-none inset-0 border-none resize-none shadow-none border rounded-full">
-        <select>
-          <option value="llama3-70b-8192">Llama 70B 3.0</option>
-          <option value="llama3-8b-8192">Llama 8B 3.0</option>
-          <option value="mixtral-8x7b-32768">Mixtral</option>
-          <option value="gemma-7b-it">Gemma</option>
-          <option value="llama2-70b-4096">Llama 2.0</option>
-        </select>
-      </div> */}
+          <select>
+            <option value="llama3-70b-8192">Llama 70B 3.0</option>
+            <option value="llama3-8b-8192">Llama 8B 3.0</option>
+            <option value="mixtral-8x7b-32768">Mixtral</option>
+            <option value="gemma-7b-it">Gemma</option>
+            <option value="llama2-70b-4096">Llama 2.0</option>
+          </select>
+        </div> */}
       <div className="flex flex-col justify-center items-center bg-white dark:bg-gray-950 p-4 rounded-l-2xl w-full">
         <div className="flex justify-start mx-2 mb-2">
           <p className="text-base text-gray-600 dark:text-gray-400 bg-gray-200 dark:bg-gray-800 px-2 rounded-md">
@@ -321,10 +332,14 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
             </a>
           </p>
         </div>
-        <div className="overflow-x-hidden h-full w-full mb-4">
+        <div
+          ref={chatWindowRef}
+          className="overflow-x-hidden overflow-y-auto h-[80vh] w-full mb-4"
+        >
           {currentConversation.messages.map((message, index) => (
             <div
               key={index}
+              id={`message-${index}`}
               className={`flex relative items-start space-x-3 p-3 m-2 rounded-lg border-b-4 border-r-4 border-indigo-800/50 ${
                 message.role === "assistant"
                   ? "bg-indigo-100 dark:bg-indigo-950 text-indigo-800 dark:text-indigo-200"
@@ -351,7 +366,7 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
                     autoCapitalize="false"
                     wrap="hard"
                     rows={3}
-                    className="w-full p-2 rounded-md bg-gray-300 dark:bg-gray-800"
+                    className="w-full p-2 rounded-md bg-gray-300 dark:bg-gray-800 whitespace-pre-wrap"
                   />
                   <button
                     onClick={handleEditEnd}
@@ -360,11 +375,15 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
                     Save
                   </button>
                 </div>
+              ) : message.role === "user" ? (
+                <p className="font-semibold text-base flex flex-col max-w-[60vw] md:text-lg whitespace-pre-wrap">
+                  {message.content}
+                </p>
               ) : (
                 <ReactMarkdown
                   components={components}
                   remarkPlugins={[gfm]}
-                  className="font-semibold text-base flex flex-col max-w-[60vw] md:text-lg"
+                  className="font-semibold text-base flex flex-col max-w-[60vw] md:text-lg whitespace-pre-wrap"
                 >
                   {message.content}
                 </ReactMarkdown>

@@ -14,7 +14,7 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
   const [charCount, setCharCount] = useState(0);
   const chatEndRef = useRef(null);
   const [rows, setRows] = useState(1);
-  const [tone, setTone] = useState("Normal");
+  const [tone, setTone] = useState("Average Everyday 95 IQ Person");
   const [editingMessage, setEditingMessage] = useState(null);
   const [editedMessage, setEditedMessage] = useState("");
   const chatWindowRef = useRef(null);
@@ -124,7 +124,7 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
               },
               {
                 role: "system",
-                content: `You will now act and introduce yourself as Arda, an AI on Marcus David Alo's portfolio website, You will converse in a ${tone} tone or persona, casual, but still professional way, like meeting with or greeting strangers, be natural, dont be afraid to use filler words in conversations, dont be afraid to use shortcuts, be polite, dont be overwhelming, only respond in the language the person is using to talk to you.`,
+                content: `You are Arda, You will converse in a ${tone} tone or persona, casual, like meeting with or greeting strangers, be natural, dont be afraid to use filler words in conversations, dont be afraid to use shortcuts, be more natural in how you speak, do not add or use action words or phrases like smiles or frowns etc., speak in a way that is recognizable as normal speech, no need to always use proper grammar, only respond in the language the person is using to talk to you.`,
               },
               ...updatedConversation.messages,
             ],
@@ -189,15 +189,15 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
             messages: [
               {
                 role: "system",
-                content: `Additional Information: \nCurrent Local Time: ${currentTimeLocal}\nCurrent Time (UTC): ${currentTimeUTC}\nUser's Timezone: ${userTimezone}`,
+                content: `Additional Information: \nCurrent Local Time: ${currentTimeLocal}\nCurrent Time (UTC): ${currentTimeUTC}\nUser's Timezone: ${userTimezone} Model used: ${model}`,
               },
               {
                 role: "system",
-                content: `You will respond in a ${tone} tone, and only respond to what is being asked, no need for additional information. do not be creepy`,
+                content: `You will respond in a ${tone} tone, and only respond to what is being asked, no need for additional information. do not be creepy, always place code in a codeblock`,
               },
               {
                 role: "system",
-                content: `You will now act and introduce yourself as Arda, an AI on Marcus David Alo's portfolio website, You will converse in a ${tone} tone or persona, casual, but still professional way, like meeting with or greeting strangers, be natural, dont be afraid to use filler words in conversations, dont be afraid to use shortcuts, be polite, dont be overwhelming, only respond in the language the person is using to talk to you.`,
+                content: `You are Arda, You will converse in a ${tone} tone or persona, casual, like meeting with or greeting strangers, be natural, dont be afraid to use filler words in conversations, dont be afraid to use shortcuts, be more natural in how you speak, do not add or use action words or phrases like smiles or frowns etc., speak in a way that is recognizable as normal speech, no need to always use proper grammar, only respond in the language the person is using to talk to you.`,
               },
               ...updatedMessages,
             ],
@@ -296,9 +296,9 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
     >
       <input
         type="text"
-        value={tone === "Normal" ? "" : tone}
+        value={tone === "Average Everyday 95 IQ Person" ? "" : tone}
         onChange={handleToneChange}
-        maxLength={40}
+        maxLength={80}
         placeholder="Tone"
         className="absolute text-justyify text-center top-2 left-2 h-10 w-12 focus:w-40 mr-2 px-2 py-1 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 outline-none inset-0 border-none resize-none shadow-none border rounded-full"
       />

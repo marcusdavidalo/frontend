@@ -21,7 +21,7 @@ const Sidebar = ({
       } relative`}
     >
       <button
-        className="absolute top-1/2 right-0 -mr-4 bg-gray-100 dark:bg-gray-900 rounded-full p-1 transition-colors duration-300"
+        className="absolute top-1/2 right-0 -mr-4 bg-gray-100 dark:bg-gray-900 rounded-full p-1 transition-colors duration-300 z-10"
         onClick={toggleCollapse}
       >
         {isCollapsed ? (

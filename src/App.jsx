@@ -11,7 +11,12 @@ function App() {
   const isArdaRoute = location.pathname === "/arda";
   const [isDarkMode, setIsDarkMode] = useState(() => {
     const savedIsDarkMode = localStorage.getItem("isDarkMode");
-    return savedIsDarkMode !== null ? JSON.parse(savedIsDarkMode) : false;
+    if (savedIsDarkMode !== null) {
+      return JSON.parse(savedIsDarkMode);
+    } else {
+      const prefersDarkMode = window.matchMedia("(prefers-color-scheme: dark)");
+      return prefersDarkMode.matches;
+    }
   });
 
   const toggleDarkMode = () => {

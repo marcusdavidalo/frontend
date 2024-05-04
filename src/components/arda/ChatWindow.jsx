@@ -64,8 +64,8 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
     return Intl.DateTimeFormat().resolvedOptions().timeZone;
   };
 
-  const sendMessage = useCallback(
-    async (resendMessage, messages = currentConversation.messages) => {
+  const sendChatCompletion = useCallback(
+    async (messageContent, updatedMessages) => {
       const models = [
         "llama3-70b-8192",
         "llama3-8b-8192",
@@ -73,7 +73,47 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
         "gemma-7b-it",
         "llama2-70b-4096",
       ];
+      const currentTimeLocal = getCurrentTimeLocal();
+      const currentTimeUTC = getCurrentTimeUTC();
+      const userTimezone = getUserTimezone();
 
+      let chatCompletion;
+      for (let model of models) {
+        try {
+          chatCompletion = await groq.chat.completions.create({
+            messages: [
+              {
+                role: "system",
+                content: `Additional Information: \nCurrent Local Time: ${currentTimeLocal}\nCurrent Time (UTC): ${currentTimeUTC}\nUser's Timezone: ${userTimezone}\n Model used: ${model}`,
+              },
+              {
+                role: "system",
+                content: `You will respond in a ${tone} tone, and only respond to what is being asked, no need for additional information. do not be creepy`,
+              },
+              {
+                role: "system",
+                content: `You are Arda, You will converse in a ${tone} tone or persona, casual, like meeting with or greeting strangers, be natural, dont be afraid to use filler words in conversations, dont be afraid to use shortcuts, be more natural in how you speak, do not add or use action words or phrases like smiles or frowns etc., speak in a way that is recognizable as normal speech, no need to always use proper grammar, only respond in the language the person is using to talk to you.`,
+              },
+              ...updatedMessages,
+            ],
+            model: model,
+            temperature: 0.65,
+            max_tokens: 8192,
+            top_p: 0.75,
+          });
+          break;
+        } catch (error) {
+          console.error(`Error with model ${model}:`, error);
+        }
+      }
+
+      return chatCompletion;
+    },
+    [groq.chat.completions, tone]
+  );
+
+  const sendMessage = useCallback(
+    async (resendMessage, messages = currentConversation.messages) => {
       // Ensure resendMessage is a string
       const messageContent =
         (typeof resendMessage === "string" ? resendMessage : "") || message;
@@ -108,39 +148,10 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
         setRows(1);
       }
 
-      const currentTimeLocal = getCurrentTimeLocal();
-      const currentTimeUTC = getCurrentTimeUTC();
-      const userTimezone = getUserTimezone();
-
-      let chatCompletion;
-      for (let model of models) {
-        try {
-          chatCompletion = await groq.chat.completions.create({
-            messages: [
-              {
-                role: "system",
-                content: `Additional Information: \nCurrent Local Time: ${currentTimeLocal}\nCurrent Time (UTC): ${currentTimeUTC}\nUser's Timezone: ${userTimezone}\n Model used: ${model}`,
-              },
-              {
-                role: "system",
-                content: `You will respond in a ${tone} tone, and only respond to what is being asked, no need for additional information. do not be creepy`,
-              },
-              {
-                role: "system",
-                content: `You are Arda, You will converse in a ${tone} tone or persona, casual, like meeting with or greeting strangers, be natural, dont be afraid to use filler words in conversations, dont be afraid to use shortcuts, be more natural in how you speak, do not add or use action words or phrases like smiles or frowns etc., speak in a way that is recognizable as normal speech, no need to always use proper grammar, only respond in the language the person is using to talk to you.`,
-              },
-              ...updatedConversation.messages,
-            ],
-            model: model,
-            temperature: 0.65,
-            max_tokens: 8192,
-            top_p: 0.75,
-          });
-          break;
-        } catch (error) {
-          console.error(`Error with model ${model}:`, error);
-        }
-      }
+      const chatCompletion = await sendChatCompletion(
+        messageContent,
+        updatedConversation.messages
+      );
 
       setIsTyping(false);
       const updatedConversationWithResponse = {
@@ -159,10 +170,9 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
     [
       currentConversation.id,
       currentConversation.messages,
-      groq.chat.completions,
+      sendChatCompletion,
       message,
       onConversationUpdate,
-      tone,
     ]
   );
 
@@ -174,46 +184,10 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
       });
       setIsTyping(true);
 
-      const models = [
-        "llama3-70b-8192",
-        "llama3-8b-8192",
-        "mixtral-8x7b-32768",
-        "gemma-7b-it",
-        "llama2-70b-4096",
-      ];
-      const currentTimeLocal = getCurrentTimeLocal();
-      const currentTimeUTC = getCurrentTimeUTC();
-      const userTimezone = getUserTimezone();
-
-      let chatCompletion;
-      for (let model of models) {
-        try {
-          chatCompletion = await groq.chat.completions.create({
-            messages: [
-              {
-                role: "system",
-                content: `Additional Information: \nCurrent Local Time: ${currentTimeLocal}\nCurrent Time (UTC): ${currentTimeUTC}\nUser's Timezone: ${userTimezone} Model used: ${model}`,
-              },
-              {
-                role: "system",
-                content: `You will respond in a ${tone} tone, and only respond to what is being asked, no need for additional information. do not be creepy, always place code in a codeblock`,
-              },
-              {
-                role: "system",
-                content: `You are Arda, You will converse in a ${tone} tone or persona, casual, like meeting with or greeting strangers, be natural, dont be afraid to use filler words in conversations, dont be afraid to use shortcuts, be more natural in how you speak, do not add or use action words or phrases like smiles or frowns etc., speak in a way that is recognizable as normal speech, no need to always use proper grammar, only respond in the language the person is using to talk to you.`,
-              },
-              ...updatedMessages,
-            ],
-            model: model,
-            temperature: 0.65,
-            max_tokens: 8192,
-            top_p: 0.75,
-          });
-          break;
-        } catch (error) {
-          console.error(`Error with model ${model}:`, error);
-        }
-      }
+      const chatCompletion = await sendChatCompletion(
+        editedMessage,
+        updatedMessages
+      );
 
       setIsTyping(false);
       const updatedConversationWithResponse = {
@@ -229,7 +203,12 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
 
       onConversationUpdate(updatedConversationWithResponse);
     },
-    [groq.chat.completions, onConversationUpdate, currentConversation, tone]
+    [
+      currentConversation,
+      sendChatCompletion,
+      onConversationUpdate,
+      editedMessage,
+    ]
   );
 
   const handleEditEnd = useCallback(() => {

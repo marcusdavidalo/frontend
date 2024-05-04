@@ -73,7 +73,10 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
         "gemma-7b-it",
         "llama2-70b-4096",
       ];
-      const messageContent = resendMessage || message;
+
+      // Ensure resendMessage is a string
+      const messageContent =
+        (typeof resendMessage === "string" ? resendMessage : "") || message;
       if (messageContent.trim() === "") return;
 
       // Get the last 8000 characters of the conversation history
@@ -425,7 +428,6 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
                       if (e.shiftKey) {
-                        // Insert newline character at cursor position
                         const cursorPosition = e.target.selectionStart;
                         const newValue = `${e.target.value.substring(
                           0,
@@ -437,7 +439,6 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
                         });
                         e.preventDefault();
                       } else {
-                        // Submit the form when Enter is pressed without Shift
                         sendMessage();
                         setCharCount(e.target.value.length);
                       }

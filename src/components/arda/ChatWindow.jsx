@@ -443,7 +443,9 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
                 </p>
               </div>
               <button
-                onClick={sendMessage}
+                onClick={() => {
+                  sendMessage();
+                }}
                 className="inline-flex ml-2 items-center justify-center px-4 py-2 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700"
                 disabled={isTyping}
               >

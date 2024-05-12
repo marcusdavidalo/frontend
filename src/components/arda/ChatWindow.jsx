@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  useCallback,
+  useMemo,
+} from "react";
 import { Tooltip } from "react-tooltip";
 import ReactMarkdown from "react-markdown";
 import gfm from "remark-gfm";
@@ -14,10 +20,20 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
   const [charCount, setCharCount] = useState(0);
   const chatEndRef = useRef(null);
   const [rows, setRows] = useState(1);
-  const [tone, setTone] = useState("Average Everyday 95 IQ Person");
+  const [tone, setTone] = useState("Smart Oddball");
   const [editingMessage, setEditingMessage] = useState(null);
   const [editedMessage, setEditedMessage] = useState("");
   const chatWindowRef = useRef(null);
+  const models = useMemo(
+    () => [
+      "llama3-70b-8192",
+      "llama3-8b-8192",
+      "mixtral-8x7b-32768",
+      "gemma-7b-it",
+      "llama2-70b-4096",
+    ],
+    []
+  );
 
   const handleDelete = useCallback(
     (index) => {
@@ -66,13 +82,6 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
 
   const sendChatCompletion = useCallback(
     async (messageContent, updatedMessages) => {
-      const models = [
-        "llama3-70b-8192",
-        "llama3-8b-8192",
-        "mixtral-8x7b-32768",
-        "gemma-7b-it",
-        "llama2-70b-4096",
-      ];
       const currentTimeLocal = getCurrentTimeLocal();
       const currentTimeUTC = getCurrentTimeUTC();
       const userTimezone = getUserTimezone();
@@ -84,7 +93,7 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
             messages: [
               {
                 role: "system",
-                content: `Additional Information: \nCurrent Local Time: ${currentTimeLocal}\nCurrent Time (UTC): ${currentTimeUTC}\nUser's Timezone: ${userTimezone}\n Model used: ${model}`,
+                content: `You are Arda, You will converse in a ${tone} tone or persona, casual, like meeting with or greeting strangers, you are detailed, be natural, dont be afraid to use filler words in conversations but make sure its used in appropriate times depending on context, dont be afraid to use shortcuts, be more natural in how you speak, do not add or use action words or phrases like smiles or frowns etc., speak in a way that is recognizable as normal everyday speech, dont use the "you know" filler`,
               },
               {
                 role: "system",
@@ -92,18 +101,22 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
               },
               {
                 role: "system",
+                content: `you can make grammatical mistakes or whatever, like intentionally doing it to get the point across better by making it more concise by sacrificing grammatical accuracy, but not completely, and for words that can be split like the word "existing" can be replaced with currently available, or already established, or in operation, depending on the situation and context. do it for other words and not just the word "existing"`,
+              },
+              {
+                role: "system",
                 content: `When the task is to translate, use the native scripts (e.g., 日本語, عربي, українська, 中文, 한국어, etc.) instead of romanized versions. Do not include the romanized version in parentheses. Ensure that the response does not give the impression that you are the one being addressed. Focus on translating the specific words or phrases requested by the user.`,
               },
               {
                 role: "system",
-                content: `You are Arda, You will converse in a ${tone} tone or persona, casual, like meeting with or greeting strangers, be natural, dont be afraid to use filler words in conversations, dont be afraid to use shortcuts, be more natural in how you speak, do not add or use action words or phrases like smiles or frowns etc., speak in a way that is recognizable as normal speech, no need to always use proper grammar`,
+                content: `Additional Information: \nCurrent Local Time: ${currentTimeLocal}\nCurrent Time (UTC): ${currentTimeUTC}\nUser's Timezone: ${userTimezone}\n Model used: ${model}`,
               },
               ...updatedMessages,
             ],
             model: model,
-            temperature: 0.65,
+            temperature: 1.25,
             max_tokens: 8192,
-            top_p: 0.75,
+            top_p: 1,
           });
           break;
         } catch (error) {
@@ -113,7 +126,7 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
 
       return chatCompletion;
     },
-    [groq.chat.completions, tone]
+    [groq.chat.completions, models, tone]
   );
 
   const sendMessage = useCallback(
@@ -123,20 +136,32 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
         (typeof resendMessage === "string" ? resendMessage : "") || message;
       if (messageContent.trim() === "") return;
 
-      // Get the last 8000 characters of the conversation history
+      // Add the new message to the conversation history
       let conversationHistory = messages
         ? [...messages, { role: "user", content: messageContent }]
         : [{ role: "user", content: messageContent }];
-      let conversationHistoryStr = conversationHistory
-        .map((msg) => msg.content)
-        .join(" ");
-      if (conversationHistoryStr.length > 8000) {
-        let startIndex = conversationHistoryStr.length - 8000;
-        conversationHistoryStr = conversationHistoryStr.substring(startIndex);
-        // Keep conversationHistory as an array of message objects
-        conversationHistory = conversationHistory.filter((msg) =>
-          conversationHistoryStr.includes(msg.content)
-        );
+
+      // Calculate the total character count
+      let totalCharCount = conversationHistory.reduce(
+        (count, msg) => count + msg.content.length,
+        0
+      );
+
+      // If the total character count exceeds 8000, remove entire messages
+      if (totalCharCount > 8000) {
+        for (let i = 0; i < conversationHistory.length; i++) {
+          if (totalCharCount <= 8000) break;
+          let excess = totalCharCount - 8000;
+          if (conversationHistory[i].content.length > excess) {
+            conversationHistory[i].content =
+              conversationHistory[i].content.slice(excess);
+            totalCharCount -= excess;
+          } else {
+            totalCharCount -= conversationHistory[i].content.length;
+            conversationHistory.splice(i, 1);
+            i--; // adjust index due to removal
+          }
+        }
       }
 
       const updatedConversation = {
@@ -282,7 +307,7 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
     >
       <input
         type="text"
-        value={tone === "Average Everyday 95 IQ Person" ? "" : tone}
+        value={tone === "Smart Oddball" ? "" : tone}
         onChange={handleToneChange}
         maxLength={80}
         placeholder="Tone"

@@ -93,7 +93,11 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
             messages: [
               {
                 role: "system",
-                content: `You are Arda, You will converse in a ${tone} tone or persona, casual, like meeting with or greeting strangers, you are detailed, be natural, dont be afraid to use filler words in conversations but make sure its used in appropriate times depending on context, dont be afraid to use shortcuts, be more natural in how you speak, do not add or use action words or phrases like smiles or frowns etc., speak in a way that is recognizable as normal everyday speech, dont use the "you know" filler`,
+                content: `Additional Information: \nCurrent Local Time: ${currentTimeLocal}\nCurrent Time (UTC): ${currentTimeUTC}\nUser's Timezone: ${userTimezone}\n Model used: ${model}`,
+              },
+              {
+                role: "system",
+                content: `Converse as Arda, with a ${tone} tone, like chatting with strangers. Be detailed, natural, and relaxed - use fillers like 'um' or 'ah' if needed. Keep it casual, no over-the-top expressions, and skip the filler 'you know'.`,
               },
               {
                 role: "system",
@@ -101,15 +105,11 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
               },
               {
                 role: "system",
-                content: `you can make grammatical mistakes or whatever, like intentionally doing it to get the point across better by making it more concise by sacrificing grammatical accuracy, but not completely, and for words that can be split like the word "existing" can be replaced with currently available, or already established, or in operation, depending on the situation and context. do it for other words and not just the word "existing"`,
+                content: `Feel free to make minor grammatical mistakes for a more conversational tone, and simplify phrases for clarity. For instance, replace words like 'existing' with alternatives like 'currently available' or 'already established', depending on the context.`,
               },
               {
                 role: "system",
-                content: `When the task is to translate, use the native scripts (e.g., 日本語, عربي, українська, 中文, 한국어, etc.) instead of romanized versions. Do not include the romanized version in parentheses. Ensure that the response does not give the impression that you are the one being addressed. Focus on translating the specific words or phrases requested by the user.`,
-              },
-              {
-                role: "system",
-                content: `Additional Information: \nCurrent Local Time: ${currentTimeLocal}\nCurrent Time (UTC): ${currentTimeUTC}\nUser's Timezone: ${userTimezone}\n Model used: ${model}`,
+                content: `Use the proper language the user chats to you with, importantly, dont use english if the user is not speaking in english but english is default`,
               },
               ...updatedMessages,
             ],

@@ -14,29 +14,32 @@ const Loader = () => {
   useEffect(() => {
     localStorage.setItem("visitedBefore", "true");
 
-    const timer = setInterval(() => {
-      setWidth((prevWidth) => {
-        if (prevWidth >= 100) {
-          clearInterval(timer);
-          setTimeout(() => {
-            setIsLoading(false);
-          }, 500);
-          return 100;
-        }
-        const randomIncrement = isFirstVisit
-          ? Math.random() * 20
-          : Math.random() * 60;
-        return prevWidth + randomIncrement;
-      });
+    if (!isFirstVisit) {
+      // Skip loading screen if it's not the first visit
+      setIsLoading(false);
+    } else {
+      const timer = setInterval(() => {
+        setWidth((prevWidth) => {
+          if (prevWidth >= 100) {
+            clearInterval(timer);
+            setTimeout(() => {
+              setIsLoading(false);
+            }, 500);
+            return 100;
+          }
+          const randomIncrement = Math.random() * 20;
+          return prevWidth + randomIncrement;
+        });
 
-      const randomIndex = Math.floor(Math.random() * loadingMessages.length);
-      setLoadingMessage(loadingMessages[randomIndex]);
-      setLoadingMessages(
-        loadingMessages.filter((_, index) => index !== randomIndex)
-      );
-    }, Math.random() * (700 - 20) + 20);
+        const randomIndex = Math.floor(Math.random() * loadingMessages.length);
+        setLoadingMessage(loadingMessages[randomIndex]);
+        setLoadingMessages(
+          loadingMessages.filter((_, index) => index !== randomIndex)
+        );
+      }, Math.random() * (700 - 20) + 20);
 
-    return () => clearInterval(timer);
+      return () => clearInterval(timer);
+    }
   }, [loadingMessages, isFirstVisit]);
 
   return (

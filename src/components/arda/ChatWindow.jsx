@@ -12,7 +12,6 @@ import copy from "clipboard-copy";
 import { ReactComponent as GroqLogo } from "../../assets/chatbot/groq-seeklogo.svg";
 import { InformationCircleIcon } from "@heroicons/react/24/outline";
 import { PencilIcon, TrashIcon } from "@heroicons/react/24/solid";
-import Me from "../../assets/home/Me.png";
 
 const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
   const [message, setMessage] = useState("");
@@ -93,7 +92,7 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
             messages: [
               {
                 role: "system",
-                content: `Your Name: Arda \nSpeech Tone: ${tone} \nAdditional Information: \nCurrent Local Time: ${currentTimeLocal}\nCurrent Time (UTC): ${currentTimeUTC}\nUser's Timezone: ${userTimezone}\n Model used: ${model}`,
+                content: `\nSpeech Tone: ${tone} \nAdditional Information: \nCurrent Local Time: ${currentTimeLocal}\nCurrent Time (UTC): ${currentTimeUTC}\nUser's Timezone: ${userTimezone}\n Model used: ${model}`,
               },
               // {
               //   role: "system",
@@ -141,28 +140,28 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
         ? [...messages, { role: "user", content: messageContent }]
         : [{ role: "user", content: messageContent }];
 
-      // Calculate the total character count
-      let totalCharCount = conversationHistory.reduce(
-        (count, msg) => count + msg.content.length,
-        0
-      );
+      // // Calculate the total character count
+      // let totalCharCount = conversationHistory.reduce(
+      //   (count, msg) => count + msg.content.length,
+      //   0
+      // );
 
-      // If the total character count exceeds 8000, remove entire messages
-      if (totalCharCount > 8000) {
-        for (let i = 0; i < conversationHistory.length; i++) {
-          if (totalCharCount <= 8000) break;
-          let excess = totalCharCount - 8000;
-          if (conversationHistory[i].content.length > excess) {
-            conversationHistory[i].content =
-              conversationHistory[i].content.slice(excess);
-            totalCharCount -= excess;
-          } else {
-            totalCharCount -= conversationHistory[i].content.length;
-            conversationHistory.splice(i, 1);
-            i--; // adjust index due to removal
-          }
-        }
-      }
+      // // If the total character count exceeds 8000, remove entire messages
+      // if (totalCharCount > 8000) {
+      //   for (let i = 0; i < conversationHistory.length; i++) {
+      //     if (totalCharCount <= 8000) break;
+      //     let excess = totalCharCount - 8000;
+      //     if (conversationHistory[i].content.length > excess) {
+      //       conversationHistory[i].content =
+      //         conversationHistory[i].content.slice(excess);
+      //       totalCharCount -= excess;
+      //     } else {
+      //       totalCharCount -= conversationHistory[i].content.length;
+      //       conversationHistory.splice(i, 1);
+      //       i--; // adjust index due to removal
+      //     }
+      //   }
+      // }
 
       const updatedConversation = {
         id: currentConversation.id,
@@ -311,7 +310,7 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
         onChange={handleToneChange}
         maxLength={80}
         placeholder="Tone"
-        className="absolute text-justyify text-center top-2 left-2 h-10 w-12 focus:w-40 mr-2 px-2 py-1 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 outline-none inset-0 border-none resize-none shadow-none border rounded-full"
+        className="absolute text-justify top-2 left-2 h-10 w-12 focus:w-40 mr-2 px-2 py-1 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 outline-none inset-0 border-none resize-none shadow-none border rounded-full"
       />
       <div className="flex flex-col justify-center items-center bg-white dark:bg-gray-950 p-4 rounded-l-2xl w-full">
         <div className="flex justify-start mx-2 mb-2">
@@ -345,19 +344,18 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
             <div
               key={index}
               id={`message-${index}`}
-              className={`flex relative items-start space-x-3 p-3 m-2 rounded-lg border-b-4 border-r-4 border-indigo-800/50 ${
+              className={`flex relative items-start p-3 rounded-lg border border-gray-300 dark:border-gray-500 m-2 shadow-md dark:shadow-black/70 ${
                 message.role === "assistant"
-                  ? "bg-indigo-100 dark:bg-indigo-950 text-indigo-800 dark:text-indigo-200"
+                  ? "bg-indigo-200 dark:bg-indigo-950 text-indigo-800 dark:text-indigo-200"
                   : "bg-gray-200 dark:bg-gray-800 text-gray-800 dark:text-gray-200"
               }`}
             >
-              {message.role === "assistant" && (
-                <img
-                  src={Me}
-                  alt="Your Name"
-                  className="h-10 w-10 rounded-full"
-                />
-              )}
+              {message.role === "assistant"}
+              {/* && (
+                <div className="h-10 w-10 rounded-full bg-white dark:bg-gray-950 border border-gray-300 dark:border-gray-800 m-2 shadow-md dark:shadow-black/70 transform transition duration-500 ease-in-out hover:scale-105 flex justify-center items-center text-2xl font-bold text-gray-600 dark:text-gray-300">
+                  AI
+                </div>
+              )} */}
               {editingMessage === index ? (
                 <div className="w-full">
                   <textarea

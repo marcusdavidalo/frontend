@@ -16,7 +16,7 @@ const Contact = () => {
         <h1 className="text-4xl font-extrabold text-gray-900 dark:text-gray-200 mb-8">
           Contact Me
         </h1>
-        <div className="bg-white dark:bg-gray-950 border-b-4 border-r-4 border-gray-300 dark:border-gray-800 p-8 rounded-lg shadow-md ">
+        <div className="bg-white dark:bg-gray-950 border border-gray-300 dark:border-gray-800 p-6 rounded-lg shadow-md dark:shadow-black/70 transform transition duration-500 ease-in-out ">
           <form
             action="https://api.web3forms.com/submit"
             method="POST"

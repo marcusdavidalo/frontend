@@ -27,3 +27,53 @@ textarea:focus {
   border-color: #4299e1;
   box-shadow: 0 0 0 0px rgba(66, 153, 225, 0.5);
 }
+
+/* Scrollbar styling for light mode */
+::-webkit-scrollbar {
+  width: 10px; /* width of the scrollbar */
+  height: 100%;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1; /* light mode scrollbar track color */
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888; /* light mode scrollbar thumb color */
+  border-radius: 10px; /* rounded corners */
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555; /* light mode scrollbar thumb hover color */
+}
+
+::-webkit-scrollbar-button {
+  background: transparent; /* scrollbar button color */
+}
+
+::-webkit-scrollbar-corner {
+  background: transparent; /* scrollbar corner color */
+}
+
+/* Scrollbar styling for dark mode */
+.dark ::-webkit-scrollbar-track {
+  background: #404040; /* dark mode scrollbar track color */
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: #a0a0a0; /* dark mode scrollbar thumb color */
+  border-radius: 10px; /* rounded corners */
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #c0c0c0; /* dark mode scrollbar thumb hover color */
+}
+
+.dark ::-webkit-scrollbar-button {
+  background: transparent; /* keeps scrollbar button transparent in dark mode */
+}
+
+.dark ::-webkit-scrollbar-corner {
+  background: transparent; /* keeps scrollbar corner transparent in dark mode */
+}

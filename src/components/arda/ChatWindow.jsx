@@ -94,22 +94,6 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
                 role: "system",
                 content: `\nSpeech Tone: ${tone} \nAdditional Information: \nCurrent Local Time: ${currentTimeLocal}\nCurrent Time (UTC): ${currentTimeUTC}\nUser's Timezone: ${userTimezone}\n Model used: ${model}`,
               },
-              // {
-              //   role: "system",
-              //   content: `You are Arda, You will converse in a ${tone} tone or persona, casual, like meeting with or greeting strangers, you are detailed, be natural, dont be afraid to use filler words in conversations but make sure its used in appropriate times depending on context, dont be afraid to use shortcuts, be more natural in how you speak, do not add or use action words or phrases like smiles or frowns etc., speak in a way that is recognizable as normal everyday speech, dont use the "you know" filler`,
-              // },
-              // {
-              //   role: "system",
-              //   content: `You will respond in a ${tone} tone or persona, and only respond to what is being asked, no need for additional information.`,
-              // },
-              // {
-              //   role: "system",
-              //   content: `you can make grammatical mistakes or whatever, like intentionally doing it to get the point across better by making it more concise by sacrificing grammatical accuracy, but not completely, and for words that can be split like the word "existing" can be replaced with currently available, or already established, or in operation, depending on the situation and context. do it for other words and not just the word "existing"`,
-              // },
-              // {
-              //   role: "system",
-              //   content: `When the task is to translate, use the native scripts (e.g., 日本語, عربي, українська, 中文, 한국어, etc.) instead of romanized versions. Do not include the romanized version in parentheses. Ensure that the response does not give the impression that you are the one being addressed. Focus on translating the specific words or phrases requested by the user.`,
-              // },
               ...updatedMessages,
             ],
             model: model,
@@ -130,38 +114,14 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
 
   const sendMessage = useCallback(
     async (resendMessage, messages = currentConversation.messages) => {
-      // Ensure resendMessage is a string
+      // Ensure resendMessage is a string because javascript :D
       const messageContent =
         (typeof resendMessage === "string" ? resendMessage : "") || message;
       if (messageContent.trim() === "") return;
 
-      // Add the new message to the conversation history
       let conversationHistory = messages
         ? [...messages, { role: "user", content: messageContent }]
         : [{ role: "user", content: messageContent }];
-
-      // // Calculate the total character count
-      // let totalCharCount = conversationHistory.reduce(
-      //   (count, msg) => count + msg.content.length,
-      //   0
-      // );
-
-      // // If the total character count exceeds 8000, remove entire messages
-      // if (totalCharCount > 8000) {
-      //   for (let i = 0; i < conversationHistory.length; i++) {
-      //     if (totalCharCount <= 8000) break;
-      //     let excess = totalCharCount - 8000;
-      //     if (conversationHistory[i].content.length > excess) {
-      //       conversationHistory[i].content =
-      //         conversationHistory[i].content.slice(excess);
-      //       totalCharCount -= excess;
-      //     } else {
-      //       totalCharCount -= conversationHistory[i].content.length;
-      //       conversationHistory.splice(i, 1);
-      //       i--; // adjust index due to removal
-      //     }
-      //   }
-      // }
 
       const updatedConversation = {
         id: currentConversation.id,

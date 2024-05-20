@@ -4,16 +4,14 @@ Welcome to my portfolio repository! This project showcases my personal portfolio
 
 ## Table of Contents
 
-```
-- Demo
-- Features
-- Installation
-- Usage
-- Technologies
-- Contributing
-- License
-- Contact
-```
+- [Demo](#demo)
+- [Features](#features)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Technologies](#technologies)
+- [Contributing](#contributing)
+- [License](#license)
+- [Contact](#contact)
 
 ### Demo
 

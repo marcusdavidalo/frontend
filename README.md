@@ -15,7 +15,7 @@ Welcome to my portfolio repository! This project showcases my personal portfolio
 
 ### Demo
 
-You can view the live demo of my portfolio here: https://marcusdavidalo.vercel.app.
+You can view the live demo of my portfolio [here](https://marcusdavidalo.vercel.app).
 
 ### Features
 
@@ -30,37 +30,42 @@ You can view the live demo of my portfolio here: https://marcusdavidalo.vercel.a
 
 _To get a local copy up and running, follow these steps:_
 
-```
+
 1. Clone the repository:
+2. ```sh
    git clone https://github.com/marcusdavidalo/portfoliomain.git
-2. Navigate to the project directory:
+   ```
+3. Navigate to the project directory:
+4. ```sh
    cd portfoliomain
-3. Install dependencies:
+   ```
+5. Install dependencies:
+   ```sh
    npm install
-```
+   ```
 
 ### Usage
 
-```
 To start the development server, run:
-- npm start
-- Open http://localhost:3000 to view it in your browser. The page will reload when you make changes.
+```sh
+npm start
+```
+Open [http://localhost:3000](http://localhost:3000) to view it in your browser. The page will reload when you make changes.
 
 To build the app for production, run:
-- npm run build
-
-This will create an optimized production build in the build folder.
+```sh
+npm run build
 ```
+This will create an optimized production build in the build folder.
+
 
 ### Technologies
 
-```
 - React
 - Tailwind CSS
 - JavaScript
 - HTML
 - CSS
-```
 
 ## License
 

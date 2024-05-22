@@ -13,10 +13,13 @@ import { ReactComponent as GroqLogo } from "../../assets/chatbot/groq-seeklogo.s
 import { InformationCircleIcon } from "@heroicons/react/24/outline";
 import { PencilIcon, TrashIcon } from "@heroicons/react/24/solid";
 
+const MAX_TOKENS = 8192;
+const TOKEN_LIMIT = 6000;
+const MAX_HISTORY = 5;
+
 const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
   const [message, setMessage] = useState("");
   const [isTyping, setIsTyping] = useState(false);
-  const [charCount, setCharCount] = useState(0);
   const chatEndRef = useRef(null);
   const [rows, setRows] = useState(1);
   const [tone, setTone] = useState("Normal");
@@ -58,29 +61,20 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
   };
 
   const scrollToBottom = () => {
-    if (currentConversation.length > 0) {
+    if (chatEndRef.current) {
       chatEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
   };
 
   useEffect(scrollToBottom, [currentConversation]);
 
-  const getCurrentTimeLocal = () => {
-    const date = new Date();
-    return date.toLocaleTimeString();
-  };
-
-  const getCurrentTimeUTC = () => {
-    const date = new Date();
-    return date.toUTCString();
-  };
-
-  const getUserTimezone = () => {
-    return Intl.DateTimeFormat().resolvedOptions().timeZone;
-  };
+  const getCurrentTimeLocal = () => new Date().toLocaleTimeString();
+  const getCurrentTimeUTC = () => new Date().toUTCString();
+  const getUserTimezone = () =>
+    Intl.DateTimeFormat().resolvedOptions().timeZone;
 
   const sendChatCompletion = useCallback(
-    async (messageContent, updatedMessages) => {
+    async (messageContent, updatedMessages, searchedContent) => {
       const currentTimeLocal = getCurrentTimeLocal();
       const currentTimeUTC = getCurrentTimeUTC();
       const userTimezone = getUserTimezone();
@@ -92,14 +86,24 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
             messages: [
               {
                 role: "system",
-                content: `\nSpeech Tone: ${tone} \nAdditional Information: \nCurrent Local Time: ${currentTimeLocal}\nCurrent Time (UTC): ${currentTimeUTC}\nUser's Timezone: ${userTimezone}\n Model used: ${model}`,
+                content: `\nSpeech Tone: ${tone} \nAdditional Information: \nCurrent Local Time: ${currentTimeLocal}\nCurrent Time (UTC): ${currentTimeUTC}\nUser's Timezone: ${userTimezone}\nModel used: ${model}`,
               },
-              ...updatedMessages,
+              {
+                role: "system",
+                content:
+                  "Determine keywords for searching relevant information based on the user's message.",
+              },
+              {
+                role: "system",
+                content: `Do not refer to this as provided text or information and use it to add to the information you provide to the user. \nDynamic Searched Information: ${searchedContent}`,
+              },
+              ...updatedMessages.slice(-MAX_HISTORY),
             ],
             model: model,
             temperature: 1.25,
-            max_tokens: 8192,
+            max_tokens: MAX_TOKENS,
             top_p: 1,
+            stop: null,
           });
           break;
         } catch (error) {
@@ -112,17 +116,31 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
     [groq.chat.completions, models, tone]
   );
 
+  const fetchGoogleSearchResults = async (query) => {
+    const apiKey = process.env.REACT_APP_GOOGLE;
+    const searchEngineId = process.env.REACT_APP_SEARCH_ENGINE_ID;
+    const url = `https://www.googleapis.com/customsearch/v1?q=${query}&key=${apiKey}&cx=${searchEngineId}`;
+
+    try {
+      const response = await fetch(url);
+      const data = await response.json();
+      return data.items ? data.items.map((item) => item.snippet).join(" ") : "";
+    } catch (error) {
+      console.error("Error fetching search results:", error);
+      return "";
+    }
+  };
+
   const sendMessage = useCallback(
     async (resendMessage, messages = currentConversation.messages) => {
-      // Ensure resendMessage is a string because javascript :D
       const messageContent =
         (typeof resendMessage === "string" ? resendMessage : "") || message;
       if (messageContent.trim() === "") return;
 
-      let conversationHistory = messages
-        ? [...messages, { role: "user", content: messageContent }]
-        : [{ role: "user", content: messageContent }];
-
+      const conversationHistory = [
+        ...messages,
+        { role: "user", content: messageContent },
+      ];
       const updatedConversation = {
         id: currentConversation.id,
         messages: conversationHistory,
@@ -136,9 +154,35 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
         setRows(1);
       }
 
+      let searchResults = "";
+
+      const keywordsPromptCompletion = await groq.chat.completions.create({
+        messages: [
+          ...updatedConversation.messages.slice(-MAX_HISTORY),
+          {
+            role: "system",
+            content:
+              "Determine keywords for searching relevant information based on the user's message.",
+          },
+        ],
+        model: models[0],
+        temperature: 0.7,
+        max_tokens: 50,
+        top_p: 1,
+        stop: null,
+      });
+
+      const keywords =
+        keywordsPromptCompletion?.choices[0]?.message?.content || "";
+      if (keywords) {
+        searchResults = await fetchGoogleSearchResults(keywords);
+        searchResults = searchResults.substring(0, 4000);
+      }
+
       const chatCompletion = await sendChatCompletion(
         messageContent,
-        updatedConversation.messages
+        updatedConversation.messages,
+        searchResults
       );
 
       setIsTyping(false);
@@ -155,13 +199,7 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
 
       onConversationUpdate(updatedConversationWithResponse);
     },
-    [
-      currentConversation.id,
-      currentConversation.messages,
-      sendChatCompletion,
-      message,
-      onConversationUpdate,
-    ]
+    [currentConversation, sendChatCompletion, message, onConversationUpdate]
   );
 
   const updateConversation = useCallback(
@@ -174,7 +212,8 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
 
       const chatCompletion = await sendChatCompletion(
         editedMessage,
-        updatedMessages
+        updatedMessages,
+        ""
       );
 
       setIsTyping(false);
@@ -200,16 +239,12 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
   );
 
   const handleEditEnd = useCallback(() => {
-    // Delete the messages after the message being edited
     const updatedMessages = currentConversation.messages.slice(
       0,
       editingMessage + 1
     );
-    // Update the content of the message being edited
     updatedMessages[editingMessage].content = editedMessage;
-    // Update the conversation and send it to the GROQ API
     updateConversation(updatedMessages);
-    // Reset the editing state
     setEditingMessage(null);
     setEditedMessage("");
   }, [currentConversation, editingMessage, editedMessage, updateConversation]);
@@ -237,40 +272,23 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
     },
   };
 
-  const handleTextareaChange = (e) => {
-    const newValue = e.target.value;
-    const newRows = newValue.split("\n").length;
-    setRows(newRows);
-    setMessage(newValue);
-    setCharCount(newValue.length);
+  const handleTextareaChange = (event) => {
+    const newMessage = event.target.value;
+    setMessage(newMessage);
+
+    const newRows = newMessage.split("\n").length;
+    if (newRows > rows && newRows <= 15) {
+      setRows(newRows);
+    } else if (newRows < rows) {
+      setRows(newRows);
+    }
   };
 
-  useEffect(() => {
-    setCharCount(message.length);
-  }, [message]);
-
-  useEffect(() => {
-    if (chatWindowRef.current) {
-      const scrollHeight = chatWindowRef.current.scrollHeight;
-      chatWindowRef.current.scrollTo(0, scrollHeight, { behavior: "smooth" });
-      document
-        .querySelector("#chatWindow")
-        .scrollIntoView({ behavior: "smooth" });
-    }
-  }, [currentConversation.messages]);
-
   return (
-    <div
-      className="relative flex w-full h-screen overflow-auto dark:bg-gray-900"
-      id="chatWindow"
-    >
+    <div className="relative flex flex-col items-center h-full bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
       <input
         type="text"
-        value={tone === "Normal" ? "" : tone}
-        onChange={handleToneChange}
-        maxLength={80}
-        placeholder="Tone"
-        className="absolute text-justify top-2 left-2 h-10 w-12 focus:w-40 mr-2 px-2 py-1 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 outline-none inset-0 border-none resize-none shadow-none border rounded-full"
+        className="hidden text-gray-300 bg-white dark:bg-gray-800 outline-none inset-0 border-none resize-none shadow-none border rounded-full"
       />
       <div className="flex flex-col justify-center items-center bg-white dark:bg-gray-950 p-4 rounded-l-2xl w-full">
         <div className="flex justify-start mx-2 mb-2">
@@ -310,12 +328,6 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
                   : "bg-gray-200 dark:bg-gray-800 text-gray-800 dark:text-gray-200"
               }`}
             >
-              {message.role === "assistant"}
-              {/* && (
-                <div className="h-10 w-10 rounded-full bg-white dark:bg-gray-950 border border-gray-300 dark:border-gray-800 m-2 shadow-md dark:shadow-black/70 transform transition duration-500 ease-in-out hover:scale-105 flex justify-center items-center text-2xl font-bold text-gray-600 dark:text-gray-300">
-                  AI
-                </div>
-              )} */}
               {editingMessage === index ? (
                 <div className="w-full">
                   <textarea
@@ -338,10 +350,6 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
                     Save
                   </button>
                 </div>
-              ) : message.role === "user" ? (
-                <p className="font-semibold text-base flex flex-col max-w-[60vw] md:text-lg whitespace-pre-wrap">
-                  {message.content}
-                </p>
               ) : (
                 <ReactMarkdown
                   components={components}
@@ -370,7 +378,7 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
           )}
           <div ref={chatEndRef} />
         </div>
-        <div className="flex w-full items-center space-x-2">
+        <div className="flex w-full items-center space-x-2 mb-4">
           <InformationCircleIcon
             data-tooltip-id="disclaimerTooltip"
             className="h-6 w-6 text-gray-700 dark:text-gray-300 cursor-pointer hover:scale-110"
@@ -386,55 +394,50 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
             answers carefully
           </Tooltip>
           <div className="flex justify-center items-center relative w-full">
-            <div className="flex justify-center items-center relative w-full">
-              <div className="w-full bg-white dark:bg-gray-800 text-black dark:text-white flex-1 border border-gray-300 rounded-md overflow-hidden relative">
-                <textarea
-                  value={message}
-                  onChange={handleTextareaChange}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      if (e.shiftKey) {
-                        const cursorPosition = e.target.selectionStart;
-                        const newValue = `${e.target.value.substring(
-                          0,
-                          cursorPosition
-                        )}\n${e.target.value.substring(cursorPosition)}`;
-                        setMessage(newValue);
-                        handleTextareaChange({
-                          target: { value: newValue },
-                        });
-                        e.preventDefault();
-                      } else {
-                        sendMessage();
-                        setCharCount(e.target.value.length);
-                      }
+            <div className="w-full bg-white dark:bg-gray-800 text-black dark:text-white flex-1 border border-gray-300 rounded-md overflow-hidden relative">
+              <textarea
+                value={message}
+                onChange={handleTextareaChange}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    if (e.shiftKey) {
+                      const cursorPosition = e.target.selectionStart;
+                      const newValue = `${e.target.value.substring(
+                        0,
+                        cursorPosition
+                      )}\n${e.target.value.substring(cursorPosition)}`;
+                      setMessage(newValue);
+                      handleTextareaChange({
+                        target: { value: newValue },
+                      });
+                      e.preventDefault();
+                    } else {
+                      sendMessage();
                     }
-                  }}
-                  className="w-full bg-white dark:bg-gray-800 px-2 py-2 outline-none inset-0 border-none resize-none shadow-none"
-                  disabled={isTyping}
-                  placeholder="Type your message here..."
-                  maxLength={12000}
-                  autoComplete="on"
-                  spellCheck="false"
-                  autoCorrect="false"
-                  autoCapitalize="false"
-                  wrap="hard"
-                  rows={rows}
-                />
-                <p className="absolute bottom-0 right-2 text-sm text-gray-700 dark:text-gray-300">
-                  {charCount}/12000
-                </p>
-              </div>
-              <button
-                onClick={() => {
-                  sendMessage();
+                  }
                 }}
-                className="inline-flex ml-2 items-center justify-center px-4 py-2 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700"
+                className="w-full bg-white dark:bg-gray-800 px-2 py-2 outline-none inset-0 border-none resize-none shadow-none"
                 disabled={isTyping}
-              >
-                Send
-              </button>
+                placeholder="Type your message here..."
+                maxLength={32000}
+                autoComplete="on"
+                spellCheck="false"
+                autoCorrect="false"
+                autoCapitalize="false"
+                wrap="hard"
+                rows={rows}
+              />
+              <p className="absolute bottom-0 right-2 text-sm text-gray-700 dark:text-gray-300">
+                {message.length}/32000
+              </p>
             </div>
+            <button
+              onClick={() => sendMessage()}
+              className="inline-flex ml-2 items-center justify-center px-4 py-2 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700"
+              disabled={isTyping}
+            >
+              Send
+            </button>
           </div>
         </div>
       </div>

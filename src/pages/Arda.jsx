@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import axios from "axios";
 import Groq from "groq-sdk";
 import Sidebar from "../components/arda/Sidebar";
 import ChatWindow from "../components/arda/ChatWindow";
@@ -11,6 +12,9 @@ const groq = new Groq({
   dangerouslyAllowBrowser: true,
 });
 
+const GOOGLE_API_KEY = process.env.REACT_APP_GOOGLE;
+const CX = process.env.REACT_APP_SEARCH_ENGINE_ID;
+
 const Arda = () => {
   const [savedConversations, setSavedConversations] = useState([]);
   const [currentConversation, setCurrentConversation] = useState({
@@ -18,6 +22,8 @@ const Arda = () => {
     messages: [],
   });
   const [scrollPosition, setScrollPosition] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
 
   useEffect(() => {
     const savedConversations = localStorage.getItem("conversations");
@@ -46,15 +52,18 @@ const Arda = () => {
   useEffect(() => {
     const handleScroll = () => {
       const chatWindow = document.getElementById("chatWindow");
-      const chatWindowRect = chatWindow.getBoundingClientRect();
-      if (chatWindowRect.top > 100 - 60) {
-        setScrollPosition("down");
-      } else if (chatWindowRect.bottom < window.innerHeight - 60) {
-        setScrollPosition("up");
-      } else {
-        setScrollPosition(null);
+      if (chatWindow) {
+        const chatWindowRect = chatWindow.getBoundingClientRect();
+        if (chatWindowRect.top > 100 - 60) {
+          setScrollPosition("down");
+        } else if (chatWindowRect.bottom < window.innerHeight - 60) {
+          setScrollPosition("up");
+        } else {
+          setScrollPosition(null);
+        }
       }
     };
+
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
@@ -103,6 +112,31 @@ const Arda = () => {
     scrollToChatWindow();
   };
 
+  const searchGoogle = async (query) => {
+    try {
+      const response = await axios.get(
+        "https://www.googleapis.com/customsearch/v1",
+        {
+          params: {
+            key: GOOGLE_API_KEY,
+            cx: CX,
+            q: query,
+          },
+        }
+      );
+      return response.data.items; // Return the search results
+    } catch (error) {
+      console.error("Error performing search:", error);
+      return [];
+    }
+  };
+
+  const handleSearch = async () => {
+    if (searchQuery.trim() === "") return;
+    const results = await searchGoogle(searchQuery);
+    setSearchResults(results);
+  };
+
   useTitle("Arda");
 
   return (
@@ -124,11 +158,15 @@ const Arda = () => {
           onRenameConversation={renameConversation}
           onNewConversation={startNewConversation}
         />
-        <div className="h-screen w-full overflow-auto">
+        <div className="h-screen w-full overflow-auto" id="chatWindow">
           <ChatWindow
             groq={groq}
             currentConversation={currentConversation}
             onConversationUpdate={updateCurrentConversation}
+            searchQuery={searchQuery}
+            setSearchQuery={setSearchQuery}
+            handleSearch={handleSearch}
+            searchResults={searchResults}
           />
         </div>
       </div>

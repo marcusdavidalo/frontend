@@ -194,7 +194,7 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
         const keywordsText = keywords?.choices[0]?.message?.content || "";
         if (keywordsText) {
           searchResults = await fetchGoogleSearchResults(keywordsText);
-          searchResults = searchResults.substring(0, 4000);
+          searchResults = searchResults.substring(0, 12000);
         }
       }
 

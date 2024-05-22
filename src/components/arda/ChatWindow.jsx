@@ -14,7 +14,6 @@ import { InformationCircleIcon } from "@heroicons/react/24/outline";
 import { PencilIcon, TrashIcon } from "@heroicons/react/24/solid";
 
 const MAX_TOKENS = 8192;
-const TOKEN_LIMIT = 6000;
 const MAX_HISTORY = 5;
 
 const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
@@ -22,7 +21,7 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
   const [isTyping, setIsTyping] = useState(false);
   const chatEndRef = useRef(null);
   const [rows, setRows] = useState(1);
-  const [tone, setTone] = useState("Normal");
+  const tone = useState("Normal");
   const [editingMessage, setEditingMessage] = useState(null);
   const [editedMessage, setEditedMessage] = useState("");
   const chatWindowRef = useRef(null);
@@ -56,10 +55,6 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
     [currentConversation.messages]
   );
 
-  const handleToneChange = (e) => {
-    setTone(e.target.value);
-  };
-
   const scrollToBottom = () => {
     if (chatEndRef.current) {
       chatEndRef.current.scrollIntoView({ behavior: "smooth" });
@@ -90,12 +85,11 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
               },
               {
                 role: "system",
-                content:
-                  "Determine keywords for searching relevant information based on the user's message.",
+                content: `provide raw links searched from this, no markdown: \nDynamic Searched Information: ${searchedContent}`,
               },
               {
                 role: "system",
-                content: `Write in anchor tags for links and underline them, Do not refer to this in any way as provided text or information and use it to add to the information you provide to the user, instead, provide the links. \nDynamic Searched Information: ${searchedContent}`,
+                content: `provide the link(s) used, Do not refer to this in any way as provided text or information and use it to add to the information you provide to the user`,
               },
               ...updatedMessages.slice(-MAX_HISTORY),
             ],
@@ -154,15 +148,13 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
         setRows(1);
       }
 
-      let searchResults = "";
-
       const keywordsPromptCompletion = await groq.chat.completions.create({
         messages: [
           ...updatedConversation.messages.slice(-MAX_HISTORY),
           {
             role: "system",
             content:
-              "Determine keywords for searching relevant information based on the user's message.",
+              "Determine if a search is required based on the user's message. Respond with 'yes' or 'no'.",
           },
         ],
         model: models[0],
@@ -172,11 +164,34 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
         stop: null,
       });
 
-      const keywords =
-        keywordsPromptCompletion?.choices[0]?.message?.content || "";
-      if (keywords) {
-        searchResults = await fetchGoogleSearchResults(keywords);
-        searchResults = searchResults.substring(0, 4000);
+      const requiresSearch =
+        keywordsPromptCompletion?.choices[0]?.message?.content
+          .trim()
+          .toLowerCase() === "yes";
+      let searchResults = "";
+
+      if (requiresSearch) {
+        const keywords = await groq.chat.completions.create({
+          messages: [
+            ...updatedConversation.messages.slice(-MAX_HISTORY),
+            {
+              role: "system",
+              content:
+                "Determine keywords for searching relevant information based on the user's message.",
+            },
+          ],
+          model: models[0],
+          temperature: 0.7,
+          max_tokens: 50,
+          top_p: 1,
+          stop: null,
+        });
+
+        const keywordsText = keywords?.choices[0]?.message?.content || "";
+        if (keywordsText) {
+          searchResults = await fetchGoogleSearchResults(keywordsText);
+          searchResults = searchResults.substring(0, 4000);
+        }
       }
 
       const chatCompletion = await sendChatCompletion(
@@ -297,7 +312,7 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
         type="text"
         className="hidden text-gray-300 bg-white dark:bg-gray-800 outline-none inset-0 border-none resize-none shadow-none border rounded-full"
       />
-      <div className="flex flex-col justify-center items-center bg-white dark:bg-gray-950 p-4 rounded-l-2xl w-full">
+      <div className="flex flex-col justify-center items-center h-full bg-white dark:bg-gray-950 p-4 rounded-l-2xl w-full">
         <div className="flex justify-start mx-2 mb-2">
           <p className="text-base text-gray-600 dark:text-gray-400 bg-gray-200 dark:bg-gray-800 px-2 rounded-md">
             Powered by{" "}
@@ -329,7 +344,7 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
             <div
               key={index}
               id={`message-${index}`}
-              className={`flex relative items-start p-3 rounded-lg border border-gray-300 dark:border-gray-500 m-2 shadow-md dark:shadow-black/70 ${
+              className={`flex relative items-start p-3 rounded-lg border border-gray-300 dark:border-gray-500 m-2 shadow-md dark:shadow-black/70 transition-all delay-0 ease-linear ${
                 message.role === "assistant"
                   ? "bg-indigo-200 dark:bg-indigo-950 text-indigo-800 dark:text-indigo-200"
                   : "bg-gray-200 dark:bg-gray-800 text-gray-800 dark:text-gray-200"
@@ -414,9 +429,7 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
                         cursorPosition
                       )}\n${e.target.value.substring(cursorPosition)}`;
                       setMessage(newValue);
-                      handleTextareaChange({
-                        target: { value: newValue },
-                      });
+                      handleTextareaChange({ target: { value: newValue } });
                       e.preventDefault();
                     } else {
                       sendMessage();
@@ -426,8 +439,8 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
                 className="w-full bg-white dark:bg-gray-800 px-2 py-2 outline-none inset-0 border-none resize-none shadow-none"
                 disabled={isTyping}
                 placeholder="Type your message here..."
-                maxLength={32000}
                 autoComplete="on"
+                maxLength={32000}
                 spellCheck="false"
                 autoCorrect="false"
                 autoCapitalize="false"

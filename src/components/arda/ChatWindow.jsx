@@ -21,7 +21,7 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
   const [isTyping, setIsTyping] = useState(false);
   const chatEndRef = useRef(null);
   const [rows, setRows] = useState(1);
-  const tone = useState("Normal");
+  const tone = useState("Humanlike");
   const [editingMessage, setEditingMessage] = useState(null);
   const [editedMessage, setEditedMessage] = useState("");
   const chatWindowRef = useRef(null);
@@ -85,11 +85,15 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
               },
               {
                 role: "system",
-                content: `provide raw links searched from this, no markdown: \nDynamic Searched Information: ${searchedContent}`,
+                content: `provide raw link(s) searched from this, no markdown: \nDynamic Searched Information: ${searchedContent}`,
               },
               {
                 role: "system",
                 content: `provide the link(s) used, Do not refer to this in any way as provided text or information and use it to add to the information you provide to the user`,
+              },
+              {
+                role: "system",
+                content: `make sure the information is entirely factual and accurate by cross-referencing multiple results.`,
               },
               ...updatedMessages.slice(-MAX_HISTORY),
             ],
@@ -177,7 +181,7 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
             {
               role: "system",
               content:
-                "Determine keywords for searching relevant information based on the user's message.",
+                "Determine the most accurate keywords for searching relevant information based on the user's message.",
             },
           ],
           model: models[0],

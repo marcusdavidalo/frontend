@@ -95,7 +95,7 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
               },
               {
                 role: "system",
-                content: `Do not refer to this as provided text or information and use it to add to the information you provide to the user. \nDynamic Searched Information: ${searchedContent}`,
+                content: `Write in anchor tags for links and underline them, Do not refer to this in any way as provided text or information and use it to add to the information you provide to the user, instead, provide the links. \nDynamic Searched Information: ${searchedContent}`,
               },
               ...updatedMessages.slice(-MAX_HISTORY),
             ],
@@ -199,7 +199,14 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
 
       onConversationUpdate(updatedConversationWithResponse);
     },
-    [currentConversation, sendChatCompletion, message, onConversationUpdate]
+    [
+      currentConversation,
+      sendChatCompletion,
+      message,
+      onConversationUpdate,
+      groq.chat.completions,
+      models,
+    ]
   );
 
   const updateConversation = useCallback(

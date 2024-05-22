@@ -93,7 +93,7 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
               },
               {
                 role: "system",
-                content: `make sure the information is entirely factual and accurate by cross-referencing multiple results.`,
+                content: `make sure the information is entirely factual and accurate by cross-referencing multiple results. on ${searchedContent}`,
               },
               ...updatedMessages.slice(-MAX_HISTORY),
             ],

@@ -69,7 +69,7 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
     Intl.DateTimeFormat().resolvedOptions().timeZone;
 
   const sendChatCompletion = useCallback(
-    async (messageContent, updatedMessages, searchedContent) => {
+    async (updatedMessages, searchedContent) => {
       const currentTimeLocal = getCurrentTimeLocal();
       const currentTimeUTC = getCurrentTimeUTC();
       const userTimezone = getUserTimezone();
@@ -89,7 +89,7 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
               },
               {
                 role: "system",
-                content: `provide the link(s) used, Do not refer to this in any way as provided text or information and use it to add to the information you provide to the user`,
+                content: `provide the link(s) used and make sure they open in a new tab. Do not refer to this in any way as provided text or information and use it to add to the information you provide to the user.`,
               },
               {
                 role: "system",
@@ -117,7 +117,8 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
   const fetchGoogleSearchResults = async (query) => {
     const apiKey = process.env.REACT_APP_GOOGLE;
     const searchEngineId = process.env.REACT_APP_SEARCH_ENGINE_ID;
-    const url = `https://www.googleapis.com/customsearch/v1?q=${query}&key=${apiKey}&cx=${searchEngineId}`;
+    const dateRestrict = "d1"; // Fetch results from the last day
+    const url = `https://www.googleapis.com/customsearch/v1?q=${query}&key=${apiKey}&cx=${searchEngineId}&dateRestrict=${dateRestrict}`;
 
     try {
       const response = await fetch(url);
@@ -199,8 +200,7 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
       }
 
       const chatCompletion = await sendChatCompletion(
-        messageContent,
-        updatedConversation.messages,
+        conversationHistory,
         searchResults
       );
 
@@ -236,11 +236,7 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
       });
       setIsTyping(true);
 
-      const chatCompletion = await sendChatCompletion(
-        editedMessage,
-        updatedMessages,
-        ""
-      );
+      const chatCompletion = await sendChatCompletion(updatedMessages, "");
 
       setIsTyping(false);
       const updatedConversationWithResponse = {
@@ -256,12 +252,7 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
 
       onConversationUpdate(updatedConversationWithResponse);
     },
-    [
-      currentConversation,
-      sendChatCompletion,
-      onConversationUpdate,
-      editedMessage,
-    ]
+    [currentConversation, sendChatCompletion, onConversationUpdate]
   );
 
   const handleEditEnd = useCallback(() => {
@@ -274,6 +265,18 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
     setEditingMessage(null);
     setEditedMessage("");
   }, [currentConversation, editingMessage, editedMessage, updateConversation]);
+
+  const handleTextareaChange = (event) => {
+    const newMessage = event.target.value;
+    setMessage(newMessage);
+
+    const newRows = newMessage.split("\n").length;
+    if (newRows > rows && newRows <= 15) {
+      setRows(newRows);
+    } else if (newRows < rows) {
+      setRows(newRows);
+    }
+  };
 
   const components = {
     code: ({ node, inline, children, ...props }) => {
@@ -297,19 +300,6 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
       );
     },
   };
-
-  const handleTextareaChange = (event) => {
-    const newMessage = event.target.value;
-    setMessage(newMessage);
-
-    const newRows = newMessage.split("\n").length;
-    if (newRows > rows && newRows <= 15) {
-      setRows(newRows);
-    } else if (newRows < rows) {
-      setRows(newRows);
-    }
-  };
-
   return (
     <div className="relative flex flex-col items-center h-full bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
       <input

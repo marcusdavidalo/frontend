@@ -1,10 +1,4 @@
-import React, {
-  useState,
-  useEffect,
-  useRef,
-  useCallback,
-  useMemo,
-} from "react";
+import React, { useState, useRef, useCallback, useMemo } from "react";
 import ReactMarkdown from "react-markdown";
 import gfm from "remark-gfm";
 import copy from "clipboard-copy";
@@ -50,14 +44,6 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
     },
     [currentConversation.messages]
   );
-
-  const scrollToBottom = () => {
-    if (chatEndRef.current) {
-      chatEndRef.current.scrollIntoView({ behavior: "smooth" });
-    }
-  };
-
-  useEffect(scrollToBottom, [currentConversation]);
 
   const getCurrentTimeLocal = () => new Date().toLocaleTimeString();
   const getCurrentTimeUTC = () => new Date().toUTCString();
@@ -327,7 +313,7 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
   };
 
   return (
-    <div className="flex flex-col w-full h-full relative bg-gray-100 dark:bg-gray-950/50 text-gray-900 dark:text-gray-100 p-4">
+    <div className="flex flex-col w-full h-[80vh] relative bg-gray-100 dark:bg-gray-950/50 text-gray-900 dark:text-gray-100 p-4">
       <div className="overflow-auto flex-1 rounded-md" ref={chatWindowRef}>
         <div className="space-y-4">
           {currentConversation.messages.map((msg, index) => (

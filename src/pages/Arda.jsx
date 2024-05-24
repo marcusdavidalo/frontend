@@ -5,7 +5,6 @@ import Sidebar from "../components/arda/Sidebar";
 import ChatWindow from "../components/arda/ChatWindow";
 import { v4 as uuidv4 } from "uuid";
 import useTitle from "../hooks/useTitle";
-import { ArrowDownIcon, ArrowUpIcon } from "@heroicons/react/24/solid";
 
 const groq = new Groq({
   apiKey: process.env.REACT_APP_GROQ,
@@ -21,7 +20,6 @@ const Arda = () => {
     id: uuidv4(),
     messages: [],
   });
-  const [scrollPosition, setScrollPosition] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
 
@@ -38,35 +36,7 @@ const Arda = () => {
 
   const loadConversation = (conversation) => {
     setCurrentConversation(conversation);
-    document.querySelector("#chatWindow").scrollIntoView({
-      behavior: "smooth",
-    });
   };
-
-  const scrollToChatWindow = () => {
-    document.querySelector("#chatWindow").scrollIntoView({
-      behavior: "smooth",
-    });
-  };
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const chatWindow = document.getElementById("chatWindow");
-      if (chatWindow) {
-        const chatWindowRect = chatWindow.getBoundingClientRect();
-        if (chatWindowRect.top > 100 - 60) {
-          setScrollPosition("down");
-        } else if (chatWindowRect.bottom < window.innerHeight - 60) {
-          setScrollPosition("up");
-        } else {
-          setScrollPosition(null);
-        }
-      }
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
 
   const updateCurrentConversation = (updatedConversation) => {
     setCurrentConversation(updatedConversation);
@@ -109,7 +79,6 @@ const Arda = () => {
 
   const startNewConversation = () => {
     setCurrentConversation({ id: uuidv4(), messages: [] });
-    scrollToChatWindow();
   };
 
   const searchGoogle = async (query) => {
@@ -141,15 +110,6 @@ const Arda = () => {
 
   return (
     <>
-      {scrollPosition && (
-        <button
-          onClick={scrollToChatWindow}
-          className="fixed h-10 w-10 p-2 rounded-full bottom-10 right-10 z-[1000] bg-gray-200 dark:bg-gray-700 text-black dark:text-white"
-        >
-          {scrollPosition === "up" ? <ArrowUpIcon /> : <ArrowDownIcon />}
-        </button>
-      )}
-
       <div className="relative flex h-[80vh] w-full dark:bg-gray-900">
         <Sidebar
           conversations={savedConversations}

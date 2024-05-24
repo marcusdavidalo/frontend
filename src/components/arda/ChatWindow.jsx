@@ -63,11 +63,11 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
             messages: [
               {
                 role: "system",
-                content: `\nSpeech Tone: ${tone} \nCurrent Local Information: \nCurrent Local Time: ${currentTimeLocal}\nCurrent Time (UTC): ${currentTimeUTC}\nUser's Timezone: ${userTimezone}\nModel used: ${model}`,
+                content: `Speech Tone: ${tone} \nAdditional Information: \nCurrent Local Time: ${currentTimeLocal}\nCurrent Time (UTC): ${currentTimeUTC}\nUser's Timezone: ${userTimezone}\nModel used: ${model}`,
               },
               {
                 role: "system",
-                content: `you no longer have information cutoff, provide links where information was used: \nInformation from the Internet: ${JSON.stringify(
+                content: `Provide the proper links, \nLatest relevant searched information from the internet: ${JSON.stringify(
                   searchedContent
                 )}`,
               },
@@ -137,7 +137,31 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
         setRows(1);
       }
 
-      const requiresSearch = true;
+      const keywordsPromptCompletion = await groq.chat.completions.create({
+        messages: [
+          ...updatedConversation.messages.slice(-MAX_HISTORY),
+          {
+            role: "system",
+            content:
+              "Decide if a search is necessary based on the message given, especially when it requires the latest information, respond only with a 'yes' if its necessary and a 'no' if not, no extras like other words or symbols",
+          },
+        ],
+        model: models[1],
+        temperature: 0.5,
+        max_tokens: 3,
+        top_p: 1,
+      });
+
+      console.log(
+        "keywordsPromptCompletion:\n",
+        keywordsPromptCompletion?.choices[0]?.message?.content
+      );
+
+      const requiresSearch =
+        (await keywordsPromptCompletion?.choices[0]?.message?.content
+          .trim()
+          .toLowerCase()) === "yes";
+
       console.log("requiresSearch:\n" + requiresSearch);
       let searchResults = "";
 
@@ -153,13 +177,14 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
           ],
           model: models[0],
           temperature: 0.7,
-          max_tokens: 50,
+          max_tokens: 100,
           top_p: 1,
           stop: null,
         });
 
         console.log(
-          "Keywords:\n" + keywords.keywords?.choices[0]?.message?.content
+          "Keywords:\n",
+          keywords.keywords?.choices[0]?.message?.content
         );
 
         const keywordsText = keywords?.choices[0]?.message?.content || "";

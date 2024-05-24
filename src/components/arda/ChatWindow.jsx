@@ -31,7 +31,6 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
       "llama3-8b-8192",
       "mixtral-8x7b-32768",
       "gemma-7b-it",
-      "llama2-70b-4096",
     ],
     []
   );
@@ -81,19 +80,17 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
             messages: [
               {
                 role: "system",
-                content: `\nSpeech Tone: ${tone} \nAdditional Information: \nCurrent Local Time: ${currentTimeLocal}\nCurrent Time (UTC): ${currentTimeUTC}\nUser's Timezone: ${userTimezone}\nModel used: ${model}`,
+                content: `\nSpeech Tone: ${tone} \nCurrent Local Information: \nCurrent Local Time: ${currentTimeLocal}\nCurrent Time (UTC): ${currentTimeUTC}\nUser's Timezone: ${userTimezone}\nModel used: ${model}`,
               },
               {
                 role: "system",
-                content: `provide raw link(s) searched from this, no markdown: \nDynamic Searched Information: ${searchedContent}`,
+                content: `provide links where information was used: \nInformation from the Internet: ${JSON.stringify(
+                  searchedContent
+                )}`,
               },
               {
                 role: "system",
-                content: `provide the link(s) used and make sure they open in a new tab. Do not refer to this in any way as provided text or information and use it to add to the information you provide to the user.`,
-              },
-              {
-                role: "system",
-                content: `make sure the information is entirely factual and accurate by cross-referencing multiple results. on ${searchedContent}`,
+                content: `provide accurate, detailed, and in-depth information`,
               },
               ...updatedMessages.slice(-MAX_HISTORY),
             ],
@@ -109,21 +106,26 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
         }
       }
 
+      console.log("Searched Content:\n", searchedContent);
+
       return chatCompletion;
     },
     [groq.chat.completions, models, tone]
   );
 
   const fetchGoogleSearchResults = async (query) => {
+    console.log("Google Search Results Query:\n" + query);
     const apiKey = process.env.REACT_APP_GOOGLE;
     const searchEngineId = process.env.REACT_APP_SEARCH_ENGINE_ID;
-    const dateRestrict = "d1"; // Fetch results from the last day
-    const url = `https://www.googleapis.com/customsearch/v1?q=${query}&key=${apiKey}&cx=${searchEngineId}&dateRestrict=${dateRestrict}`;
+    // const dateRestrict = "d7";
+    const url = `https://www.googleapis.com/customsearch/v1?q=${query}&key=${apiKey}&cx=${searchEngineId}`;
 
+    console.log("Final Url:\n", url);
     try {
       const response = await fetch(url);
       const data = await response.json();
-      return data.items ? data.items.map((item) => item.snippet).join(" ") : "";
+      console.log("Google Results:\n", data.items);
+      return data.items;
     } catch (error) {
       console.error("Error fetching search results:", error);
       return "";
@@ -153,56 +155,75 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
         setRows(1);
       }
 
-      const keywordsPromptCompletion = await groq.chat.completions.create({
-        messages: [
-          ...updatedConversation.messages.slice(-MAX_HISTORY),
-          {
-            role: "system",
-            content:
-              "Determine if a search is required based on the user's message. Respond with 'yes' or 'no'.",
-          },
-        ],
-        model: models[0],
-        temperature: 0.7,
-        max_tokens: 50,
-        top_p: 1,
-        stop: null,
-      });
+      // const keywordsPromptCompletion = await groq.chat.completions.create({
+      //   messages: [
+      //     ...updatedConversation.messages.slice(-MAX_HISTORY),
+      //     {
+      //       role: "system",
+      //       content:
+      //         "only say to everything yes in lower case, no extra words or letters or sentences",
+      //     },
+      //     {
+      //       role: "user",
+      //       content:
+      //         "if a search is required based on the message. Respond only with 'yes' if not then only 'no', no extras",
+      //     },
+      //   ],
+      //   model: models[2],
+      //   temperature: 0.7,
+      //   max_tokens: 1,
+      //   top_p: 1,
+      //   stop: null,
+      // });
 
-      const requiresSearch =
-        keywordsPromptCompletion?.choices[0]?.message?.content
-          .trim()
-          .toLowerCase() === "yes";
+      // console.log(
+      //   "keywordsPromptCompletion:\n" +
+      //     keywordsPromptCompletion?.choices[0]?.message?.content
+      // );
+
+      const requiresSearch = true;
+      // (await keywordsPromptCompletion?.choices[0]?.message?.content
+      //   .trim()
+      //   .toLowerCase()) === "yes";
+      console.log("requiresSearch:\n" + requiresSearch);
       let searchResults = "";
 
-      if (requiresSearch) {
+      if (requiresSearch === true) {
         const keywords = await groq.chat.completions.create({
           messages: [
             ...updatedConversation.messages.slice(-MAX_HISTORY),
             {
-              role: "system",
+              role: "user",
               content:
-                "Determine the most accurate keywords for searching relevant information based on the user's message.",
+                "Determine the most appropriate search term for searching relevant information based on my message, only say that search term and nothing else, no other words or sentences, dont use double quotations always, only on ones that need complete accuracy",
             },
           ],
           model: models[0],
           temperature: 0.7,
-          max_tokens: 50,
+          max_tokens: 20,
           top_p: 1,
           stop: null,
         });
 
+        console.log(
+          "Keywords:\n" + keywords.keywords?.choices[0]?.message?.content
+        );
+
         const keywordsText = keywords?.choices[0]?.message?.content || "";
         if (keywordsText) {
           searchResults = await fetchGoogleSearchResults(keywordsText);
-          searchResults = searchResults.substring(0, 12000);
+          searchResults = searchResults.slice(3, 8);
+          searchResults = JSON.stringify(searchResults);
         }
+        console.log("Keywords Text:\n" + keywordsText);
       }
 
       const chatCompletion = await sendChatCompletion(
         conversationHistory,
         searchResults
       );
+
+      console.log("Search Results:\n", searchResults);
 
       setIsTyping(false);
       const updatedConversationWithResponse = {
@@ -300,6 +321,7 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
       );
     },
   };
+
   return (
     <div className="relative flex flex-col items-center h-full bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
       <input

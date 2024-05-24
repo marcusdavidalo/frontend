@@ -150,7 +150,7 @@ const Arda = () => {
         </button>
       )}
 
-      <div className="flex h-screen w-full dark:bg-gray-900">
+      <div className="relative flex h-[80vh] w-full dark:bg-gray-900">
         <Sidebar
           conversations={savedConversations}
           onConversationClick={loadConversation}
@@ -158,17 +158,15 @@ const Arda = () => {
           onRenameConversation={renameConversation}
           onNewConversation={startNewConversation}
         />
-        <div className="h-screen w-full overflow-auto" id="chatWindow">
-          <ChatWindow
-            groq={groq}
-            currentConversation={currentConversation}
-            onConversationUpdate={updateCurrentConversation}
-            searchQuery={searchQuery}
-            setSearchQuery={setSearchQuery}
-            handleSearch={handleSearch}
-            searchResults={searchResults}
-          />
-        </div>
+        <ChatWindow
+          groq={groq}
+          currentConversation={currentConversation}
+          onConversationUpdate={updateCurrentConversation}
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+          handleSearch={handleSearch}
+          searchResults={searchResults}
+        />
       </div>
     </>
   );

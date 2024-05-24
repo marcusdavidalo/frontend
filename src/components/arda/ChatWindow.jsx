@@ -81,7 +81,7 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
               },
               {
                 role: "system",
-                content: `provide links where information was used: \nInformation from the Internet: ${JSON.stringify(
+                content: `you no longer have information cutoff, provide links where information was used: \nInformation from the Internet: ${JSON.stringify(
                   searchedContent
                 )}`,
               },
@@ -114,7 +114,6 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
     console.log("Google Search Results Query:\n" + query);
     const apiKey = process.env.REACT_APP_GOOGLE;
     const searchEngineId = process.env.REACT_APP_SEARCH_ENGINE_ID;
-    // const dateRestrict = "d7";
     const url = `https://www.googleapis.com/customsearch/v1?q=${query}&key=${apiKey}&cx=${searchEngineId}`;
 
     console.log("Final Url:\n", url);
@@ -168,7 +167,7 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
           ],
           model: models[0],
           temperature: 0.7,
-          max_tokens: 20,
+          max_tokens: 50,
           top_p: 1,
           stop: null,
         });
@@ -239,7 +238,7 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
           ],
           model: models[0],
           temperature: 0.7,
-          max_tokens: 20,
+          max_tokens: 50,
           top_p: 1,
           stop: null,
         });
@@ -309,7 +308,7 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
       return !inline ? (
         <div className="relative rounded-md shadow-sm font-mono font-normal text-sm bg-slate-900">
           <button
-            className="absolute right-0 top-0 m-2 text-sm text-white bg-indigo-600 hover:bg-indigo-700 rounded px-2 py-1"
+            className="absolute right-0 top-0 m-2 text-sm bg-indigo-800 text-white rounded px-2 py-1"
             onClick={() => copy(children)}
           >
             Copy
@@ -328,9 +327,9 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
   };
 
   return (
-    <div className="flex flex-col w-full h-full relative bg-gray-100 dark:bg-gray-950/50 text-gray-900 dark:text-gray-100">
-      <div className="overflow-auto flex-1 p-4 " ref={chatWindowRef}>
-        <div className="space-y-4 ">
+    <div className="flex flex-col w-full h-full relative bg-gray-100 dark:bg-gray-950/50 text-gray-900 dark:text-gray-100 p-4">
+      <div className="overflow-auto flex-1 rounded-md" ref={chatWindowRef}>
+        <div className="space-y-4">
           {currentConversation.messages.map((msg, index) => (
             <div
               key={index}
@@ -409,11 +408,11 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
         </div>
       )}
 
-      <div className="p-4 flex items-center">
+      <div className="pt-4 flex items-center">
         <textarea
           value={message}
           onChange={(e) => setMessage(e.target.value)}
-          className="flex-1 p-2 border rounded bg-white dark:bg-gray-800 px-2 py-2 outline-none inset-0 resize-none shadow-none"
+          className="flex-1 border rounded bg-white dark:bg-gray-800 px-2 py-2 outline-none inset-0 resize-none shadow-none"
           rows={rows}
           onKeyPress={(e) => {
             if (e.key === "Enter" && !e.shiftKey) {

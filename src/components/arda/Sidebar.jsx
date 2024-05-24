@@ -16,7 +16,7 @@ const Sidebar = ({
 
   return (
     <div
-      className={`bg-gray-100 dark:bg-gray-900 text-gray-700 dark:text-gray-300 h-screen transition-all duration-200 ease-in-out ${
+      className={`bg-gray-100 dark:bg-gray-900 text-gray-700 dark:text-gray-300 h-full transition-all duration-200 ease-in-out ${
         isCollapsed ? "min-w-0 p-1" : "min-w-max px-10 py-4"
       } relative`}
     >

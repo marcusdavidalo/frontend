@@ -4,7 +4,7 @@ import gfm from "remark-gfm";
 import copy from "clipboard-copy";
 import { PencilIcon, TrashIcon } from "@heroicons/react/24/solid";
 
-const MAX_TOKENS = 8192;
+const MAX_TOKENS = 12000;
 const MAX_HISTORY = 5;
 
 const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
@@ -12,7 +12,7 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
   const [isTyping, setIsTyping] = useState(false);
   const chatEndRef = useRef(null);
   const [rows, setRows] = useState(1);
-  const tone = useState("Humanlike");
+  const tone = useState("Normal");
   const [editingMessage, setEditingMessage] = useState(null);
   const [editedMessage, setEditedMessage] = useState("");
   const chatWindowRef = useRef(null);
@@ -67,7 +67,7 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
               },
               {
                 role: "system",
-                content: `Provide the proper links, \nLatest relevant searched information from the internet: ${JSON.stringify(
+                content: `Provide links used in relevant searched information, \nLatest relevant searched information from the internet: ${JSON.stringify(
                   searchedContent
                 )}`,
               },

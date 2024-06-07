@@ -1,5 +1,10 @@
 import React, { useState } from "react";
-import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/solid";
+import {
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  TrashIcon,
+  PencilIcon,
+} from "@heroicons/react/24/solid";
 
 const Sidebar = ({
   conversations,
@@ -16,18 +21,18 @@ const Sidebar = ({
 
   return (
     <div
-      className={`bg-gray-100 dark:bg-gray-900 text-gray-700 dark:text-gray-300 h-full transition-all duration-200 ease-in-out ${
-        isCollapsed ? "min-w-0 p-1" : "min-w-max px-10 py-4"
+      className={`bg-zinc-100 dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 h-[80vh] transition-all duration-200 ease-in-out ${
+        isCollapsed ? "min-w-0 p-1" : "min-w-max p-4"
       } relative`}
     >
       <button
-        className="absolute top-1/2 right-0 -mr-4 bg-gray-100 dark:bg-gray-900 rounded-full p-1 transition-colors duration-300 z-10"
+        className="absolute top-1/2 right-0 -mr-4 bg-zinc-100 dark:bg-zinc-900 rounded-full p-1 transition-colors duration-300 z-10"
         onClick={toggleCollapse}
       >
         {isCollapsed ? (
-          <ChevronRightIcon className="h-6 w-6 text-gray-700 dark:text-gray-300" />
+          <ChevronRightIcon className="h-6 w-6 text-zinc-700 dark:text-zinc-300" />
         ) : (
-          <ChevronLeftIcon className="h-6 w-6 text-gray-700 dark:text-gray-300" />
+          <ChevronLeftIcon className="h-6 w-6 text-zinc-700 dark:text-zinc-300" />
         )}
       </button>
       <div className={`flex ${isCollapsed ? "hidden overflow-hidden" : ""}`}>
@@ -42,47 +47,59 @@ const Sidebar = ({
           +
         </button>
       </div>
-      <ul>
-        {conversations.map((conversation, index) => (
-          <li
-            key={index}
-            className={`bg-gray-300 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-md p-2 mb-2 cursor-pointer hover:bg-gray-600 flex justify-between items-center w-max transition-all duration-200 ease-in-out ${
-              isCollapsed ? "hidden overflow-hidden" : ""
-            }`}
-            onClick={() => onConversationClick(conversation)}
-          >
-            <span
-              className={`px-2 ${isCollapsed ? "hidden" : ""}`}
-              title={conversation.name || `Conversation ${index + 1}`}
+      <div className="overflow-hidden">
+        <ul>
+          {conversations.map((conversation, index) => (
+            <li
+              key={index}
+              className={`bg-zinc-300 dark:bg-zinc-950/50 text-zinc-700 dark:text-zinc-300 rounded-md py-1 mb-2 cursor-pointer hover:bg-zinc-950 flex justify-between items-center w-max transition-all duration-100 ease-in-out min-w-full ${
+                isCollapsed ? "hidden overflow-hidden" : ""
+              }`}
+              onClick={() => onConversationClick(conversation)}
             >
-              {conversation.name
-                ? conversation.name.substring(0, 15) +
-                  (conversation.name.length > 15 ? "..." : "")
-                : `Conversation ${index + 1}`}
-            </span>
-            <div className={`${isCollapsed ? "hidden" : ""}`}>
-              <button
-                className="text-sm text-red-500 hover:text-red-700"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onDeleteConversation(index);
-                }}
+              <span
+                className={`px-2 ${isCollapsed ? "hidden" : ""}`}
+                title={conversation.name}
               >
-                Delete
-              </button>
-              <button
-                className="text-sm text-blue-500 hover:text-blue-700 ml-2"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onRenameConversation(index);
-                }}
+                {conversation.name
+                  ? conversation.name.substring(0, 30) +
+                    (conversation.name.length > 15 ? "..." : "")
+                  : `Conversation ${index + 1}`}
+              </span>
+              <div
+                className={`flex justify-center align-middle px-2 ${
+                  isCollapsed ? "hidden" : ""
+                }`}
               >
-                Rename
-              </button>
-            </div>
-          </li>
-        ))}
-      </ul>
+                <button
+                  className="text-zinc-600 hover:text-zinc-950"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onDeleteConversation(index);
+                  }}
+                >
+                  <TrashIcon
+                    className="w-5 h-5 outline-none inset-0 border-none active:scale-y-125 duration-50"
+                    title="Delete Conversation"
+                  />
+                </button>
+                <button
+                  className="text-zinc-600 hover:text-zinc-950"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onRenameConversation(index);
+                  }}
+                >
+                  <PencilIcon
+                    className="w-5 h-5 outline-none inset-0 border-none active:scale-y-125 duration-50"
+                    title="Change Conversation Name"
+                  />
+                </button>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </div>
     </div>
   );
 };

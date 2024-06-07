@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback, useMemo } from "react";
+import React, { useState, useRef, useCallback } from "react";
 import ReactMarkdown from "react-markdown";
 import gfm from "remark-gfm";
 import copy from "clipboard-copy";
@@ -6,27 +6,24 @@ import { PencilIcon, TrashIcon, WifiIcon } from "@heroicons/react/24/solid";
 
 const MAX_TOKENS = 8196;
 const MAX_HISTORY = 5;
-const MAX_CHAR_LIMIT = 8000;
+// const MAX_CHAR_LIMIT = 8000;
 
-const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
+const ChatWindow = ({
+  groq,
+  currentConversation,
+  onConversationUpdate,
+  getShortName,
+  models,
+}) => {
   const [message, setMessage] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const [useInternet, setUseInternet] = useState(false);
   const chatEndRef = useRef(null);
   const [rows, setRows] = useState(1);
-  const tone = useState("Normal");
+  const [tone] = useState("Normal");
   const [editingMessage, setEditingMessage] = useState(null);
   const [editedMessage, setEditedMessage] = useState("");
   const chatWindowRef = useRef(null);
-  const models = useMemo(
-    () => [
-      "llama3-70b-8192",
-      "llama3-8b-8192",
-      "mixtral-8x7b-32768",
-      "gemma-7b-it",
-    ],
-    []
-  );
 
   const handleDelete = useCallback(
     (index) => {
@@ -75,19 +72,18 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
           role: "system",
           content: `Provide accurate, detailed, and in-depth information`,
         },
-        ...updatedMessages.slice(MAX_HISTORY),
+        ...updatedMessages.slice(-MAX_HISTORY),
       ];
 
-      const filteredMessages = promptMessages.join("\n").slice(MAX_CHAR_LIMIT);
+      const filteredMessages = promptMessages
+        .slice(0, 3)
+        .concat(updatedMessages.slice(-MAX_HISTORY));
 
       let chatCompletion;
       for (let model of models) {
         try {
           chatCompletion = await groq.chat.completions.create({
-            messages: [
-              ...promptMessages.slice(0, 3),
-              ...filteredMessages.slice(-MAX_HISTORY),
-            ],
+            messages: filteredMessages,
             model: model,
             temperature: 1.25,
             max_tokens: MAX_TOKENS,
@@ -129,14 +125,33 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
         (typeof resendMessage === "string" ? resendMessage : "") || message;
       if (messageContent.trim() === "") return;
 
+      console.log("Message Content:\n", messageContent);
+
+      const isFirstMessage = messages.length === 0;
       const conversationHistory = [
         ...messages,
         { role: "user", content: messageContent },
       ];
-      const updatedConversation = {
-        id: currentConversation.id,
+      const conversationName = [
+        ...messages,
+        {
+          role: "user",
+          content:
+            "Make 1 short title for a conversation about:" +
+            messageContent +
+            "only the title, no extra conversations",
+        },
+      ];
+
+      let updatedConversation = {
+        ...currentConversation,
         messages: conversationHistory,
       };
+
+      if (isFirstMessage) {
+        const shortName = await getShortName(conversationName);
+        updatedConversation.name = shortName.substring(0, 30);
+      }
 
       onConversationUpdate(updatedConversation);
       setIsTyping(true);
@@ -157,7 +172,7 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
         });
 
         const updatedConversationWithResponse = {
-          id: updatedConversation.id,
+          ...updatedConversation,
           messages: [
             ...updatedConversation.messages,
             {
@@ -169,7 +184,6 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
 
         setIsTyping(false);
         onConversationUpdate(updatedConversationWithResponse);
-        console.log("Chat Completion:\n", chatCompletion);
       } else {
         const keywordsPromptCompletion = await groq.chat.completions.create({
           messages: [
@@ -260,6 +274,7 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
       groq.chat.completions,
       models,
       useInternet,
+      getShortName,
     ]
   );
 
@@ -379,17 +394,17 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
   const components = {
     code: ({ node, inline, children, ...props }) => {
       return !inline ? (
-        <div className="relative rounded-md shadow-sm font-mono font-normal text-sm bg-slate-900">
+        <div className="relative rounded-md shadow-sm font-mono font-normal text-sm bg-zinc-900">
           <button
             className="absolute right-0 top-0 m-2 text-sm bg-indigo-800 text-white rounded px-2 py-1"
             onClick={() => copy(children)}
           >
             Copy
           </button>
-          <pre className="p-4 rounded-md bg-gray-950/70 text-white overflow-auto">
+          <pre className="p-4 rounded-md bg-zinc-950/70 text-white overflow-auto">
             <code {...props}>{children}</code>
           </pre>
-          <p className="text-xs font-mono text-right text-gray-500 pr-2 py-2">
+          <p className="text-xs font-mono text-right text-zinc-500 pr-2 py-2">
             This code was generated by AI. Please review properly.
           </p>
         </div>
@@ -400,7 +415,7 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
   };
 
   return (
-    <div className="flex flex-col w-full h-[80vh] relative bg-gray-100 dark:bg-gray-950/50 text-gray-900 dark:text-gray-100 p-4">
+    <div className="flex flex-col w-full h-[80vh] relative bg-zinc-100 dark:bg-zinc-950/50 text-zinc-900 dark:text-zinc-100 p-4">
       <div className="overflow-auto flex-1 rounded-md" ref={chatWindowRef}>
         <div className="flex items-center">
           <button
@@ -409,12 +424,12 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
           >
             {useInternet ? (
               <WifiIcon
-                className="w-6 h-6 text-green-600 outline-none inset-0 border-none active:scale-y-125 duration-200"
+                className="w-6 h-6 text-green-400 outline-none inset-0 border-none active:scale-y-125 duration-200"
                 title="Using Internet"
               />
             ) : (
               <WifiIcon
-                className="w-6 h-6 text-red-600 outline-none inset-0 border-none active:scale-y-125 duration-200"
+                className="w-6 h-6 text-zinc-600 outline-none inset-0 border-none active:scale-y-125 duration-200"
                 title="Not Using Internet"
               />
             )}
@@ -432,7 +447,7 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
                 className={`w-[80%] break-words p-3 rounded-lg shadow ${
                   msg.role === "assistant"
                     ? "bg-indigo-200 dark:bg-indigo-950 text-indigo-800 dark:text-indigo-200"
-                    : " bg-gray-200 dark:bg-gray-800 text-gray-800 dark:text-gray-200"
+                    : " bg-zinc-200 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200"
                 } relative`}
               >
                 {editingMessage === index ? (
@@ -440,12 +455,12 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
                     <textarea
                       value={editedMessage}
                       onChange={(e) => setEditedMessage(e.target.value)}
-                      className="w-full h-max p-2 border rounded bg-gray-200 dark:bg-gray-800 text-gray-800 dark:text-gray-200"
+                      className="w-full h-max p-2 border rounded bg-zinc-200 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200"
                     />
                     <div className="flex justify-end space-x-2 mt-2">
                       <button
                         onClick={() => setEditingMessage(null)}
-                        className="px-2 py-1 border rounded bg-gray-200 dark:bg-gray-800 text-gray-800 dark:text-gray-200"
+                        className="px-2 py-1 border rounded bg-zinc-200 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200"
                       >
                         Cancel
                       </button>
@@ -470,13 +485,13 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
                       <div className="absolute top-0 right-0 mt-1 mr-1 flex space-x-1">
                         <button
                           onClick={() => handleEditStart(index)}
-                          className="text-gray-500 hover:text-gray-700"
+                          className="text-zinc-500 hover:text-zinc-700"
                         >
                           <PencilIcon className="h-4 w-4" />
                         </button>
                         <button
                           onClick={() => handleDelete(index)}
-                          className="text-gray-500 hover:text-gray-700"
+                          className="text-zinc-500 hover:text-zinc-700"
                         >
                           <TrashIcon className="h-4 w-4" />
                         </button>
@@ -493,7 +508,7 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
       {isTyping && (
         <div className="p-2 flex items-center">
           <div className="w-4 h-4 bg-indigo-800 rounded-full mr-2 animate-bounce" />
-          <p className="text-sm text-gray-700 dark:text-gray-300">
+          <p className="text-sm text-zinc-700 dark:text-zinc-300">
             AI is typing...
           </p>
         </div>
@@ -503,7 +518,7 @@ const ChatWindow = ({ groq, currentConversation, onConversationUpdate }) => {
         <textarea
           value={message}
           onChange={(e) => setMessage(e.target.value)}
-          className="flex-1 border rounded bg-white dark:bg-gray-800 px-2 py-2 outline-none inset-0 resize-none shadow-none"
+          className="flex-1 border rounded bg-white dark:bg-zinc-800 px-2 py-2 outline-none inset-0 resize-none shadow-none"
           rows={rows}
           onKeyPress={(e) => {
             if (e.key === "Enter" && !e.shiftKey) {

@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
+import React, { useState, useEffect, useMemo } from "react";
 import Groq from "groq-sdk";
 import Sidebar from "../components/arda/Sidebar";
 import ChatWindow from "../components/arda/ChatWindow";
@@ -22,6 +21,16 @@ const Arda = () => {
   });
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
+
+  const models = useMemo(
+    () => [
+      "llama3-70b-8192",
+      "llama3-8b-8192",
+      "mixtral-8x7b-32768",
+      "gemma-7b-it",
+    ],
+    []
+  );
 
   useEffect(() => {
     const savedConversations = localStorage.getItem("conversations");
@@ -81,54 +90,49 @@ const Arda = () => {
     setCurrentConversation({ id: uuidv4(), messages: [] });
   };
 
-  const searchGoogle = async (query) => {
+  const getShortName = async (messages) => {
     try {
-      const response = await axios.get(
-        "https://www.googleapis.com/customsearch/v1",
-        {
-          params: {
-            key: GOOGLE_API_KEY,
-            cx: CX,
-            q: query,
-          },
-        }
-      );
-      return response.data.items; // Return the search results
+      const response = await groq.chat.completions.create({
+        messages,
+        model: models[0],
+        temperature: 0.7,
+        max_tokens: 100,
+        top_p: 1,
+        stop: null,
+      });
+      const shortName = response.choices[0]?.message?.content.trim();
+      return shortName || "Untitled Conversation";
     } catch (error) {
-      console.error("Error performing search:", error);
-      return [];
+      console.error("Error fetching short name from Groq:", error);
+      return "Untitled Conversation";
     }
-  };
-
-  const handleSearch = async () => {
-    if (searchQuery.trim() === "") return;
-    const results = await searchGoogle(searchQuery);
-    setSearchResults(results);
   };
 
   useTitle("Arda");
 
   return (
-    <>
-      <div className="relative flex h-[80vh] w-full dark:bg-gray-900">
-        <Sidebar
-          conversations={savedConversations}
-          onConversationClick={loadConversation}
-          onDeleteConversation={deleteConversation}
-          onRenameConversation={renameConversation}
-          onNewConversation={startNewConversation}
-        />
-        <ChatWindow
-          groq={groq}
-          currentConversation={currentConversation}
-          onConversationUpdate={updateCurrentConversation}
-          searchQuery={searchQuery}
-          setSearchQuery={setSearchQuery}
-          handleSearch={handleSearch}
-          searchResults={searchResults}
-        />
-      </div>
-    </>
+    <div className="flex h-full">
+      <Sidebar
+        conversations={savedConversations}
+        onConversationClick={loadConversation}
+        onDeleteConversation={deleteConversation}
+        onRenameConversation={renameConversation}
+        onNewConversation={startNewConversation}
+      />
+      <ChatWindow
+        currentConversation={currentConversation}
+        onConversationUpdate={updateCurrentConversation}
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
+        searchResults={searchResults}
+        setSearchResults={setSearchResults}
+        models={models}
+        groq={groq}
+        GOOGLE_API_KEY={GOOGLE_API_KEY}
+        CX={CX}
+        getShortName={getShortName} // Pass the function to ChatWindow
+      />
+    </div>
   );
 };
 

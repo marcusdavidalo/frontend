@@ -24,6 +24,7 @@ const ChatWindow = ({
   const [editingMessage, setEditingMessage] = useState(null);
   const [editedMessage, setEditedMessage] = useState("");
   const chatWindowRef = useRef(null);
+  const [showTooltip, setShowTooltip] = useState(false);
 
   const handleDelete = useCallback(
     (index) => {
@@ -35,6 +36,14 @@ const ChatWindow = ({
     },
     [currentConversation, onConversationUpdate]
   );
+
+  const handleMouseEnter = () => {
+    setShowTooltip(true);
+  };
+
+  const handleMouseLeave = () => {
+    setShowTooltip(false);
+  };
 
   const handleEditStart = useCallback(
     (index) => {
@@ -417,24 +426,37 @@ const ChatWindow = ({
   return (
     <div className="flex flex-col w-full h-[80vh] relative bg-zinc-100 dark:bg-zinc-950/50 text-zinc-900 dark:text-zinc-100 p-4">
       <div className="overflow-auto flex-1 rounded-md" ref={chatWindowRef}>
-        <div className="flex items-center">
+        <div className="flex items-center fixed z-50 bg-zinc-900 rounded-full m-2">
           <button
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
             onClick={() => setUseInternet(!useInternet)}
-            className="flex items-center justify-center w-8 h-8 p-1 rounded-full hover:scale-105 transition-all ease-in-out"
+            className="relative flex items-center justify-center w-8 h-8 p-1 rounded-full hover:scale-105 transition-all ease-in-out"
           >
             {useInternet ? (
-              <WifiIcon
-                className="w-6 h-6 text-green-400 outline-none inset-0 border-none active:scale-y-125 duration-200"
-                title="Using Internet"
-              />
+              <>
+                <WifiIcon className="w-6 h-6 text-green-400" />
+                {showTooltip && (
+                  <span className="absolute left-full ml-2 whitespace-nowrap bg-zinc-200 text-zinc-800 dark:bg-zinc-950 dark:text-zinc-200 text-sm rounded px-2 py-1">
+                    Click to <span className="text-red-400">disable</span>{" "}
+                    internet access
+                  </span>
+                )}
+              </>
             ) : (
-              <WifiIcon
-                className="w-6 h-6 text-zinc-600 outline-none inset-0 border-none active:scale-y-125 duration-200"
-                title="Not Using Internet"
-              />
+              <>
+                <WifiIcon className="w-6 h-6 text-zinc-600" />
+                {showTooltip && (
+                  <span className="absolute left-full ml-2 whitespace-nowrap bg-zinc-200 text-zinc-800 dark:bg-zinc-950 dark:text-zinc-200 text-sm rounded px-2 py-1">
+                    Click to <span className="text-green-400">enable</span>{" "}
+                    internet access
+                  </span>
+                )}
+              </>
             )}
           </button>
         </div>
+
         <div className="space-y-4">
           {currentConversation.messages.map((msg, index) => (
             <div

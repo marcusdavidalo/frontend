@@ -5,30 +5,30 @@ import Me from "../assets/home/Me.png";
 const About = () => {
   useTitle("About");
   return (
-    <div className="bg-gray-100 dark:bg-gray-900 min-h-screen py-20">
+    <div className="bg-zinc-100 dark:bg-zinc-900 min-h-screen py-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h1 className="text-5xl font-extrabold text-gray-900 dark:text-gray-200 mb-12 text-center">
+        <h1 className="text-5xl font-extrabold text-zinc-900 dark:text-zinc-200 mb-12 text-center">
           About Me
         </h1>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
           <div className="lg:col-span-1 flex justify-center">
-            <div className="relative flex justify-center bg-white dark:bg-gray-950 border border-gray-300 dark:border-gray-800 p-3 rounded-lg shadow-md dark:shadow-black/70 transform transition duration-500 ease-in-out hover:scale-105">
+            <div className="relative flex justify-center bg-white dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-800 p-3 rounded-lg shadow-md dark:shadow-black/70 transform transition duration-500 ease-in-out hover:scale-105">
               <img
                 src={Me}
                 alt="Marcus David Alo"
                 className="w-full h-full rounded-lg shadow-md object-cover transform hover:scale-105 transition duration-500"
               />
-              <p className="absolute bottom-2 mx-2 bg-gray-800/90 text-white text-sm px-3 py-1 rounded-lg">
+              <p className="absolute bottom-2 mx-2 bg-zinc-800/90 text-white text-sm px-3 py-1 rounded-lg">
                 This image was generated with my actual face run through Stable
                 Diffusion Controlnet.
               </p>
             </div>
           </div>
           <div className="lg:col-span-2">
-            <h2 className="text-4xl font-bold text-gray-900 dark:text-gray-200 mb-6">
+            <h2 className="text-4xl font-bold text-zinc-900 dark:text-zinc-200 mb-6">
               Marcus David Alo
             </h2>
-            <div className="text-lg space-y-6 leading-relaxed text-gray-700 dark:text-gray-400">
+            <div className="text-lg space-y-6 leading-relaxed text-zinc-700 dark:text-zinc-400">
               <p>
                 I am an enthusiastic beginner web developer with a solid grasp
                 of JavaScript, React, and modern web technologies. I'm

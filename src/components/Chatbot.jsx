@@ -97,9 +97,9 @@ const Chatbot = () => {
   if (isArdaRoute) return null;
 
   return (
-    <div className="fixed bottom-0 right-0 m-6 bg-white dark:bg-gray-950 border-b-4 border-r-4 border-gray-300 dark:border-gray-800 p-6 rounded-lg shadow-md dark:shadow-black/70 max-w-sm z-40">
+    <div className="fixed bottom-0 right-0 m-6 bg-white dark:bg-zinc-950 border-b-4 border-r-4 border-zinc-300 dark:border-zinc-800 p-6 rounded-lg shadow-md dark:shadow-black/70 max-w-sm z-40">
       <div className="flex justify-start mx-2 mb-2">
-        <p className="text-base text-gray-600 dark:text-gray-400 bg-gray-200 dark:bg-gray-800 px-2 rounded-md">
+        <p className="text-base text-zinc-600 dark:text-zinc-400 bg-zinc-200 dark:bg-zinc-800 px-2 rounded-md">
           Powered by{" "}
           <a href="https://groq.com/" rel="noreferrer noopener" target="_blank">
             <GroqLogo
@@ -124,7 +124,7 @@ const Chatbot = () => {
             className={`flex items-start space-x-3 p-3 m-2 max-w-96 rounded-lg border-b-4 border-r-4 border-indigo-800/50 ${
               response.role === "assistant"
                 ? "bg-indigo-100 text-indigo-800"
-                : "bg-gray-200 dark:bg-gray-800 text-gray-800 dark:text-gray-200 w-max flex-row-reverse"
+                : "bg-zinc-200 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 w-max flex-row-reverse"
             }`}
           >
             {response.role === "assistant" && (
@@ -145,7 +145,7 @@ const Chatbot = () => {
       <div className="flex items-center space-x-2">
         <InformationCircleIcon
           data-tooltip-id="disclaimerTooltip"
-          className="h-6 w-6 text-gray-700  dark:text-gray-300 cursor-pointer hover:scale-110"
+          className="h-6 w-6 text-zinc-700  dark:text-zinc-300 cursor-pointer hover:scale-110"
         />
         <Tooltip
           id="disclaimerTooltip"
@@ -165,7 +165,7 @@ const Chatbot = () => {
               sendMessage();
             }
           }}
-          className="bg-white dark:bg-gray-800 text-black dark:text-white flex-1 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-600"
+          className="bg-white dark:bg-zinc-800 text-black dark:text-white flex-1 px-4 py-2 border border-zinc-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-600"
           placeholder="Type your message..."
           disabled={isTyping}
         />
@@ -179,7 +179,7 @@ const Chatbot = () => {
       </div>
       <button
         onClick={() => setIsExpanded(false)}
-        className="absolute top-0 right-0 m-1 p-2 text-gray-700 dark:text-gray-300 hover:text-gray-900"
+        className="absolute top-0 right-0 m-1 p-2 text-zinc-700 dark:text-zinc-300 hover:text-zinc-900"
       >
         <XMarkIcon className="h-6 w-6" />
       </button>

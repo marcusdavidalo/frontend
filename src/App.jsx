@@ -28,16 +28,16 @@ function App() {
   useEffect(() => {
     if (isDarkMode) {
       document.body.classList.add("dark");
-      document.body.classList.add("bg-gray-950");
+      document.body.classList.add("bg-zinc-950");
     } else {
       document.body.classList.remove("dark");
-      document.body.classList.remove("bg-gray-950");
+      document.body.classList.remove("bg-zinc-950");
     }
   }, [isDarkMode]);
 
   return (
     <div
-      className={`h-screen bg-white dark:bg-gray-800 ${
+      className={`h-screen bg-white dark:bg-zinc-800 ${
         isDarkMode ? "dark" : ""
       }`}
     >

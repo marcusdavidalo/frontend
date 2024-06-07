@@ -28,7 +28,7 @@ const Header = ({ isDarkMode, toggleDarkMode }) => {
   return (
     <Disclosure
       as="nav"
-      className={`bg-white dark:bg-gray-800 shadow text-gray-700 dark:text-white ${
+      className={`bg-white dark:bg-zinc-800 shadow text-zinc-700 dark:text-white ${
         isDarkMode ? "dark" : ""
       }`}
     >
@@ -40,7 +40,7 @@ const Header = ({ isDarkMode, toggleDarkMode }) => {
                 <div className="flex flex-shrink-0 items-center">
                   <Link
                     to="/"
-                    className="text-3xl font-bold text-black dark:text-gray-200"
+                    className="text-3xl font-bold text-black dark:text-zinc-200"
                   >
                     Marcus David Alo
                   </Link>
@@ -56,13 +56,13 @@ const Header = ({ isDarkMode, toggleDarkMode }) => {
                         return `inline-flex items-center border-b-4 transition-all duration-200 ease-in-out ${
                           isActive
                             ? "border-pink-500 text-pink-600" // custom styling for AI Link
-                            : "border-transparent text-gray-500 dark:text-gray-200 hover:border-gray-300 dark:hover:border-gray-600 hover:text-gray-700 dark:hover:text-gray-200"
+                            : "border-transparent text-zinc-500 dark:text-zinc-200 hover:border-zinc-300 dark:hover:border-zinc-600 hover:text-zinc-700 dark:hover:text-zinc-200"
                         } px-1 pt-1 text-2xl font-semibold leading-tight`;
                       } else {
                         return `inline-flex items-center border-b-4 transition-all duration-200 ease-in-out ${
                           isActive
                             ? "border-indigo-500 text-indigo-600"
-                            : "border-transparent text-gray-500 dark:text-gray-200 hover:border-gray-300 dark:hover:border-gray-600 hover:text-gray-700 dark:hover:text-gray-200"
+                            : "border-transparent text-zinc-500 dark:text-zinc-200 hover:border-zinc-300 dark:hover:border-zinc-600 hover:text-zinc-700 dark:hover:text-zinc-200"
                         } px-1 pt-1 text-lg font-semibold leading-tight`;
                       }
                     }}
@@ -86,12 +86,12 @@ const Header = ({ isDarkMode, toggleDarkMode }) => {
                   >
                     {isDarkMode ? (
                       <MoonIcon
-                        className="block h-7 w-7 text-gray-200"
+                        className="block h-7 w-7 text-zinc-200"
                         aria-hidden="true"
                       />
                     ) : (
                       <SunIcon
-                        className="block h-8 w-8 text-gray-800"
+                        className="block h-8 w-8 text-zinc-800"
                         aria-hidden="true"
                       />
                     )}
@@ -99,7 +99,7 @@ const Header = ({ isDarkMode, toggleDarkMode }) => {
                 </button>
               </div>
               <div className="-mr-2 flex sm:hidden justify-end col-start-4">
-                <Disclosure.Button className="inline-flex items-center justify-center rounded-md bg-gray-200 dark:bg-gray-700 p-2 text-gray-400 hover:text-gray-500">
+                <Disclosure.Button className="inline-flex items-center justify-center rounded-md bg-zinc-200 dark:bg-zinc-700 p-2 text-zinc-400 hover:text-zinc-500">
                   <span className="sr-only">Open main menu</span>
                   {open ? (
                     <XMarkIcon className="block h-6 w-6" aria-hidden="true" />
@@ -129,7 +129,7 @@ const Header = ({ isDarkMode, toggleDarkMode }) => {
                     key={page.name}
                     as={Link}
                     to={page.link}
-                    className="block border-l-4 border-gray-900 dark:border-white bg-gray-200 dark:bg-gray-700 py-2 pl-3 pr-4 text-base font-medium text-gray-600 dark:text-gray-400"
+                    className="block border-l-4 border-zinc-900 dark:border-white bg-zinc-200 dark:bg-zinc-700 py-2 pl-3 pr-4 text-base font-medium text-zinc-600 dark:text-zinc-400"
                   >
                     {page.name}
                   </Disclosure.Button>

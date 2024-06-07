@@ -11,12 +11,12 @@ const Contact = () => {
   };
 
   return (
-    <div className="bg-gray-100 dark:bg-gray-900  min-h-max">
+    <div className="bg-zinc-100 dark:bg-zinc-900  min-h-max">
       <div className="max-w-7xl mx-auto py-16 px-4 sm:px-6 lg:px-8">
-        <h1 className="text-4xl font-extrabold text-gray-900 dark:text-gray-200 mb-8">
+        <h1 className="text-4xl font-extrabold text-zinc-900 dark:text-zinc-200 mb-8">
           Contact Me
         </h1>
-        <div className="bg-white dark:bg-gray-950 border border-gray-300 dark:border-gray-800 p-6 rounded-lg shadow-md dark:shadow-black/70 transform transition duration-500 ease-in-out ">
+        <div className="bg-white dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-800 p-6 rounded-lg shadow-md dark:shadow-black/70 transform transition duration-500 ease-in-out ">
           <form
             action="https://api.web3forms.com/submit"
             method="POST"
@@ -31,7 +31,7 @@ const Contact = () => {
               <div className="mb-4 w-full">
                 <label
                   htmlFor="name"
-                  className="block text-gray-700 dark:text-gray-300 font-bold mb-2"
+                  className="block text-zinc-700 dark:text-zinc-300 font-bold mb-2"
                 >
                   Name
                 </label>
@@ -39,7 +39,7 @@ const Contact = () => {
                   type="text"
                   id="name"
                   name="name"
-                  className="bg-white dark:bg-gray-800 shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight focus:outline-none focus:shadow-outline"
+                  className="bg-white dark:bg-zinc-800 shadow appearance-none border rounded w-full py-2 px-3 text-zinc-700 dark:text-zinc-300 leading-tight focus:outline-none focus:shadow-outline"
                   placeholder="Enter your name"
                   required
                 />
@@ -47,7 +47,7 @@ const Contact = () => {
               <div className="mb-4 w-full">
                 <label
                   htmlFor="email"
-                  className="block text-gray-700 dark:text-gray-300 font-bold mb-2"
+                  className="block text-zinc-700 dark:text-zinc-300 font-bold mb-2"
                 >
                   Email
                 </label>
@@ -55,7 +55,7 @@ const Contact = () => {
                   type="email"
                   id="email"
                   name="email"
-                  className="bg-white dark:bg-gray-800 shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight focus:outline-none focus:shadow-outline"
+                  className="bg-white dark:bg-zinc-800 shadow appearance-none border rounded w-full py-2 px-3 text-zinc-700 dark:text-zinc-300 leading-tight focus:outline-none focus:shadow-outline"
                   placeholder="Enter your email"
                   required
                 />
@@ -64,7 +64,7 @@ const Contact = () => {
             <div className="mb-4">
               <label
                 htmlFor="message"
-                className="block text-gray-700 dark:text-gray-300 font-bold mb-2"
+                className="block text-zinc-700 dark:text-zinc-300 font-bold mb-2"
               >
                 Message
               </label>
@@ -72,7 +72,7 @@ const Contact = () => {
                 id="message"
                 name="message"
                 rows="5"
-                className="bg-white dark:bg-gray-800 shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight focus:outline-none focus:shadow-outline"
+                className="bg-white dark:bg-zinc-800 shadow appearance-none border rounded w-full py-2 px-3 text-zinc-700 dark:text-zinc-300 leading-tight focus:outline-none focus:shadow-outline"
                 placeholder="Enter your message"
                 required
               ></textarea>

@@ -5,12 +5,12 @@ import useTitle from "../hooks/useTitle";
 const NotFound = () => {
   useTitle("404 - Page Not Found");
   return (
-    <div className="bg-gray-100 min-h-screen flex flex-col items-center justify-center">
-      <h1 className="text-9xl font-extrabold text-gray-900">404</h1>
-      <h2 className="text-4xl font-bold text-gray-900 mt-4">
+    <div className="bg-zinc-100 min-h-screen flex flex-col items-center justify-center">
+      <h1 className="text-9xl font-extrabold text-zinc-900">404</h1>
+      <h2 className="text-4xl font-bold text-zinc-900 mt-4">
         Oops! Page not found.
       </h2>
-      <p className="text-xl text-gray-600 mt-4">
+      <p className="text-xl text-zinc-600 mt-4">
         The page you're looking for doesn't seem to exist.
       </p>
       <Link

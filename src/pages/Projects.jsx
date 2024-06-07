@@ -4,12 +4,12 @@ import useTitle from "../hooks/useTitle";
 import { ChevronDownIcon } from "@heroicons/react/24/solid";
 
 const ProjectCard = ({ title, description, link }) => (
-  <div className="bg-white dark:bg-gray-950 border border-gray-300 dark:border-gray-800 p-6 rounded-lg shadow-md dark:shadow-black/70 transform transition duration-500 ease-in-out hover:scale-105">
+  <div className="bg-white dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-800 p-6 rounded-lg shadow-md dark:shadow-black/70 transform transition duration-500 ease-in-out hover:scale-105">
     <div className="mt-4">
-      <h3 className="text-xl font-bold text-gray-900 dark:text-gray-200">
+      <h3 className="text-xl font-bold text-zinc-900 dark:text-zinc-200">
         {title}
       </h3>
-      <p className="text-lg text-gray-600 dark:text-gray-400 mt-2">
+      <p className="text-lg text-zinc-600 dark:text-zinc-400 mt-2">
         {description
           ? description.length > 100
             ? `${description.substring(0, 100)}...`
@@ -101,21 +101,21 @@ const Projects = () => {
   useTitle("Projects");
 
   return (
-    <div className="bg-gray-100 dark:bg-gray-900 min-h-screen">
+    <div className="bg-zinc-100 dark:bg-zinc-900 min-h-screen">
       <div className="max-w-7xl mx-auto py-16 px-4 sm:px-6 lg:px-8">
-        <h1 className="text-4xl font-extrabold text-gray-900 dark:text-gray-200 mb-8">
+        <h1 className="text-4xl font-extrabold text-zinc-900 dark:text-zinc-200 mb-8">
           My Projects
         </h1>
         <div className="flex flex-col md:flex-row md:justify-between justify-start items-center mb-4">
           <div className="flex items-center space-x-2 mb-2 md:mb-0">
-            <span className="text-sm font-medium text-gray-700 dark:text-gray-200">
+            <span className="text-sm font-medium text-zinc-700 dark:text-zinc-200">
               Sort by:
             </span>
             <button
               onClick={() => handleSort("name")}
-              className="flex items-center space-x-1 px-3 py-2 bg-white dark:bg-gray-950 rounded-md shadow-sm"
+              className="flex items-center space-x-1 px-3 py-2 bg-white dark:bg-zinc-950 rounded-md shadow-sm"
             >
-              <span className="text-gray-700 dark:text-gray-200">
+              <span className="text-zinc-700 dark:text-zinc-200">
                 {sort.field === "name"
                   ? sort.direction === "desc"
                     ? "Name ▲"
@@ -123,16 +123,16 @@ const Projects = () => {
                   : "Name"}
               </span>
               <ChevronDownIcon
-                className={`w-5 h-5 text-gray-400 ${
+                className={`w-5 h-5 text-zinc-400 ${
                   sort.field === "name" ? "rotate-180" : ""
                 }`}
               />
             </button>
             <button
               onClick={() => handleSort("created_at")}
-              className="flex items-center space-x-1 px-3 py-2 bg-white dark:bg-gray-950 rounded-md shadow-sm"
+              className="flex items-center space-x-1 px-3 py-2 bg-white dark:bg-zinc-950 rounded-md shadow-sm"
             >
-              <span className="text-gray-700 dark:text-gray-200">
+              <span className="text-zinc-700 dark:text-zinc-200">
                 {sort.field === "created_at"
                   ? sort.direction === "desc"
                     ? "Created ▲"
@@ -140,16 +140,16 @@ const Projects = () => {
                   : "Created"}
               </span>
               <ChevronDownIcon
-                className={`w-5 h-5 text-gray-400 ${
+                className={`w-5 h-5 text-zinc-400 ${
                   sort.field === "created_at" ? "rotate-180" : ""
                 }`}
               />
             </button>
             <button
               onClick={() => handleSort("updated_at")}
-              className="flex items-center space-x-1 px-3 py-2 bg-white dark:bg-gray-950 rounded-md shadow-sm"
+              className="flex items-center space-x-1 px-3 py-2 bg-white dark:bg-zinc-950 rounded-md shadow-sm"
             >
-              <span className="text-gray-700 dark:text-gray-200">
+              <span className="text-zinc-700 dark:text-zinc-200">
                 {sort.field === "updated_at"
                   ? sort.direction === "desc"
                     ? "Updated ▲"
@@ -157,14 +157,14 @@ const Projects = () => {
                   : "Updated"}
               </span>
               <ChevronDownIcon
-                className={`w-5 h-5 text-gray-400 ${
+                className={`w-5 h-5 text-zinc-400 ${
                   sort.field === "updated_at" ? "rotate-180" : ""
                 }`}
               />
             </button>
           </div>
           <div className="space-x-2 hidden md:flex">
-            <span className="flex items-center space-x-1 px-3 py-2 bg-white dark:bg-gray-950 dark:text-gray-200 rounded-md shadow-sm">
+            <span className="flex items-center space-x-1 px-3 py-2 bg-white dark:bg-zinc-950 dark:text-zinc-200 rounded-md shadow-sm">
               Total projects: {projects.length}
             </span>
             <input
@@ -172,12 +172,12 @@ const Projects = () => {
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Search projects"
-              className="px-3 py-2 bg-white dark:bg-gray-950 dark:text-gray-200 rounded-md shadow-sm"
+              className="px-3 py-2 bg-white dark:bg-zinc-950 dark:text-zinc-200 rounded-md shadow-sm"
             />
             <select
               value={projectsPerPage}
               onChange={handleProjectsPerPageChange}
-              className="px-3 py-2 bg-white dark:bg-gray-950 dark:text-gray-200 rounded-md shadow-sm"
+              className="px-3 py-2 bg-white dark:bg-zinc-950 dark:text-zinc-200 rounded-md shadow-sm"
             >
               <option value="3">3 per page</option>
               <option value="6">6 per page</option>

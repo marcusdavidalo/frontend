@@ -44,13 +44,13 @@ const Loader = () => {
 
   return (
     <div
-      className={`fixed inset-0 flex items-center justify-center bg-gray-200 dark:bg-gray-800 transition-opacity duration-500 ${
+      className={`fixed inset-0 flex items-center justify-center bg-zinc-200 dark:bg-zinc-800 transition-opacity duration-500 ${
         isLoading ? "opacity-100 z-50" : "opacity-0 -z-50 hidden"
       }`}
     >
       <div className="flex flex-col items-center justify-center space-y-4">
         <div className="text-black dark:text-white text-xl">Loading</div>
-        <div className="relative w-64 h-1 bg-white dark:bg-gray-950 rounded-full overflow-hidden">
+        <div className="relative w-64 h-1 bg-white dark:bg-zinc-950 rounded-full overflow-hidden">
           <div
             className="absolute left-0 top-0 h-full bg-black dark:bg-white transition-all duration-500 ease-linear"
             style={{ width: `${width}%` }}

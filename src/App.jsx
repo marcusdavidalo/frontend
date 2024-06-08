@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import Layout from "./components/Layout";
 import Loader from "./components/Loader";
 import Chatbot from "./components/Chatbot";
@@ -42,9 +42,10 @@ function App() {
       }`}
     >
       <Layout isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode}>
-        <Loader />
-        {!isArdaRoute && <Chatbot />}
-        <AllRoutes />
+        <Suspense fallback={<Loader />}>
+          {!isArdaRoute && <Chatbot />}
+          <AllRoutes />
+        </Suspense>
       </Layout>
     </div>
   );

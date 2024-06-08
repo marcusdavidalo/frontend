@@ -3,51 +3,34 @@ import loadingMessagesData from "../data/loader/loadingMessages.json";
 
 const Loader = () => {
   const [width, setWidth] = useState(0);
-  const [isLoading, setIsLoading] = useState(true);
   const [loadingMessage, setLoadingMessage] = useState("");
   const [loadingMessages, setLoadingMessages] = useState([
     ...loadingMessagesData.loadingMessages,
   ]);
 
-  const isFirstVisit = localStorage.getItem("visitedBefore") === null;
-
   useEffect(() => {
-    localStorage.setItem("visitedBefore", "true");
+    const timer = setInterval(() => {
+      setWidth((prevWidth) => {
+        if (prevWidth >= 100) {
+          clearInterval(timer);
+          return 100;
+        }
+        const increment = Math.random() * 5;
+        return prevWidth + increment;
+      });
 
-    if (!isFirstVisit) {
-      // Skip loading screen if it's not the first visit
-      setIsLoading(false);
-    } else {
-      const timer = setInterval(() => {
-        setWidth((prevWidth) => {
-          if (prevWidth >= 100) {
-            clearInterval(timer);
-            setTimeout(() => {
-              setIsLoading(false);
-            }, 500);
-            return 100;
-          }
-          const randomIncrement = Math.random() * 20;
-          return prevWidth + randomIncrement;
-        });
+      const randomIndex = Math.floor(Math.random() * loadingMessages.length);
+      setLoadingMessage(loadingMessages[randomIndex]);
+      setLoadingMessages(
+        loadingMessages.filter((_, index) => index !== randomIndex)
+      );
+    }, 500); // Adjust the interval as needed
 
-        const randomIndex = Math.floor(Math.random() * loadingMessages.length);
-        setLoadingMessage(loadingMessages[randomIndex]);
-        setLoadingMessages(
-          loadingMessages.filter((_, index) => index !== randomIndex)
-        );
-      }, Math.random() * (700 - 20) + 20);
-
-      return () => clearInterval(timer);
-    }
-  }, [loadingMessages, isFirstVisit]);
+    return () => clearInterval(timer);
+  }, [loadingMessages]);
 
   return (
-    <div
-      className={`fixed inset-0 flex items-center justify-center bg-zinc-200 dark:bg-zinc-800 transition-opacity duration-500 ${
-        isLoading ? "opacity-100 z-50" : "opacity-0 -z-50 hidden"
-      }`}
-    >
+    <div className="fixed inset-0 flex items-center justify-center bg-zinc-200 dark:bg-zinc-800 transition-opacity duration-500 opacity-100 z-50">
       <div className="flex flex-col items-center justify-center space-y-4">
         <div className="text-black dark:text-white text-xl">Loading</div>
         <div className="relative w-64 h-1 bg-white dark:bg-zinc-950 rounded-full overflow-hidden">

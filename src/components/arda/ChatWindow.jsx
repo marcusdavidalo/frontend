@@ -400,7 +400,7 @@ const ChatWindow = ({
     updateConversation,
   ]);
 
-  const components = {
+  const codeBlock = {
     code: ({ node, inline, children, ...props }) => {
       return !inline ? (
         <div className="relative rounded-md shadow-sm font-mono font-normal text-sm bg-zinc-900">
@@ -426,7 +426,7 @@ const ChatWindow = ({
   return (
     <div className="flex flex-col w-full h-[80vh] relative bg-zinc-100 dark:bg-zinc-950/50 text-zinc-900 dark:text-zinc-100 p-4">
       <div className="overflow-auto flex-1 rounded-md" ref={chatWindowRef}>
-        <div className="flex items-center fixed z-50 bg-zinc-900 rounded-full m-2">
+        <div className="flex items-center fixed z-50 bg-zinc-200 dark:bg-zinc-900 rounded-full m-2">
           <button
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
@@ -435,7 +435,7 @@ const ChatWindow = ({
           >
             {useInternet ? (
               <>
-                <WifiIcon className="w-6 h-6 text-green-400" />
+                <WifiIcon className="w-6 h-6 text-green-500" />
                 {showTooltip && (
                   <span className="absolute left-full ml-2 whitespace-nowrap bg-zinc-200 text-zinc-800 dark:bg-zinc-950 dark:text-zinc-200 text-sm rounded px-2 py-1">
                     Click to <span className="text-red-400">disable</span>{" "}
@@ -448,7 +448,7 @@ const ChatWindow = ({
                 <WifiIcon className="w-6 h-6 text-zinc-600" />
                 {showTooltip && (
                   <span className="absolute left-full ml-2 whitespace-nowrap bg-zinc-200 text-zinc-800 dark:bg-zinc-950 dark:text-zinc-200 text-sm rounded px-2 py-1">
-                    Click to <span className="text-green-400">enable</span>{" "}
+                    Click to <span className="text-green-500">enable</span>{" "}
                     internet access
                   </span>
                 )}
@@ -497,7 +497,7 @@ const ChatWindow = ({
                 ) : (
                   <>
                     <ReactMarkdown
-                      components={components}
+                      components={codeBlock}
                       remarkPlugins={[gfm]}
                       className="whitespace-pre-wrap"
                     >

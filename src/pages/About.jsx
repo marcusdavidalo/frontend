@@ -1,9 +1,17 @@
-import React from "react";
+import React, { useState } from "react";
 import useTitle from "../hooks/useTitle";
 import Me from "../assets/home/Me.png";
+import "../App.css";
 
 const About = () => {
   useTitle("About");
+
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  const handleImageLoad = () => {
+    setIsLoaded(true);
+  };
+
   return (
     <div className="bg-zinc-100 dark:bg-zinc-900 min-h-screen py-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -13,12 +21,25 @@ const About = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
           <div className="lg:col-span-1 flex justify-center">
             <div className="relative flex justify-center bg-white dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-800 p-3 rounded-lg shadow-md dark:shadow-black/70 transform transition duration-500 ease-in-out hover:scale-105">
+              {isLoaded && (
+                <div
+                  className={`flex justify-center align-middle items-center w-auto px-36 h-full text-white rounded-lg shadow-md object-cover transform hover:scale-105 transition duration-500 ${
+                    !isLoaded ? "block" : "hidden"
+                  }`}
+                >
+                  Loading...
+                </div>
+              )}
+
               <img
                 src={Me}
                 alt="Marcus David Alo"
-                className="w-full h-full rounded-lg shadow-md object-cover transform hover:scale-105 transition duration-500"
+                className={`rounded-lg shadow-md object-cover transform hover:scale-105 transition duration-500 ${
+                  isLoaded ? "block" : "hidden"
+                }`}
+                onLoad={handleImageLoad}
               />
-              <p className="absolute bottom-2 mx-2 bg-zinc-800/90 text-white text-sm px-3 py-1 rounded-lg">
+              <p className="absolute w-[95%] bottom-2 mx-2 bg-zinc-800/90 text-white text-sm px-3 py-1 rounded-lg">
                 This image was generated with my actual face run through Stable
                 Diffusion Controlnet.
               </p>

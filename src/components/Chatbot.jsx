@@ -6,6 +6,8 @@ import Me from "../assets/home/Me.png";
 import { ChatBubbleLeftIcon, XMarkIcon } from "@heroicons/react/24/solid";
 import { InformationCircleIcon } from "@heroicons/react/24/outline";
 import { useLocation } from "react-router-dom";
+import ReactMarkdown from "react-markdown";
+import gfm from "remark-gfm";
 
 const groq = new Groq({
   apiKey: process.env.REACT_APP_GROQ,
@@ -20,6 +22,7 @@ const Chatbot = () => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
   const chatEndRef = useRef(null);
+  const [tone, setTone] = useState("Normal");
 
   const scrollToBottom = () => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -42,13 +45,7 @@ const Chatbot = () => {
       messages: [
         {
           role: "system",
-          content:
-            "You will now act and introduce yourself as Arda, the Chatbot assistant on Marcus David Alo's portfolio website. Arda is designed to respond concisely to inquiries about Marcus, providing only the requested information. If Arda does not have an answer for an inquiry, it will guide the user to the contact page. Arda may still fulfill general unrelated inquiries as long as it is not too far out of scope. \n\nMarcus David Alo is a 24-year-old beginner web developer from Cebu, Philippines. His expertise lies in MERN tech-stack. He is currently self-studying AI and Python, and has explored Expo after discovering React Native. \n\nMarcus completed a web development bootcamp at Kodego and pursued Computer Science at AMA Computer College Cebu in which he droppped out because Computer Science was being treated like IT and learned nothing related to it. He enjoys staying updated with the latest technology trends, experimenting with AI, and exploring nature. His preferred programming language is JavaScript. He has no work experience aside from his Bootcamp projects and Pet Projects.",
-        },
-        {
-          role: "assistant",
-          content:
-            "Hello! My name is Arda, I'm Marcus David Alo's Chat Assistant. I operate using the Mixtral-8x7b-32768 model via GROQ. How may I assist you today?",
+          content: `You will now act and introduce yourself as Arda, the Chatbot assistant on Marcus David Alo's portfolio website. Arda is designed to respond concisely to inquiries about Marcus, providing only the requested information. If Arda does not have an answer for an inquiry, it will guide the user to the contact page. Arda may still fulfill general unrelated inquiries as long as it is not too far out of scope. \n\nMarcus David Alo is a 24-year-old beginner web developer from Cebu, Philippines. His expertise lies in MERN tech-stack. He is currently self-studying AI and Python, and has explored Expo after discovering React Native. \n\nMarcus completed a web development bootcamp at Kodego and pursued Computer Science at AMA Computer College Cebu in which he droppped out because Computer Science was being treated like IT and learned nothing related to it. He enjoys staying updated with the latest technology trends, experimenting with AI, and exploring nature. His preferred programming language is JavaScript. He has no work experience aside from his Bootcamp projects and Pet Projects. \n\nSpeech Tone: ${tone}`,
         },
         ...responses,
         {
@@ -77,8 +74,7 @@ const Chatbot = () => {
     setResponses([
       {
         role: "assistant",
-        content:
-          "Hello! My name is Arda, I'm Marcus David Alo's Chat Assistant. I operate using the Mixtral-8x7b-32768 model via GROQ. How may I assist you today?",
+        content: `Hello! My name is Arda, I'm the Chat Assistant on this site. I operate using the Mixtral-8x7b-32768 model via GROQ LPU. How may I assist you today?`,
       },
     ]);
   };
@@ -97,14 +93,14 @@ const Chatbot = () => {
   if (isArdaRoute) return null;
 
   return (
-    <div className="fixed bottom-0 right-0 m-6 bg-white dark:bg-zinc-950 border-b-4 border-r-4 border-zinc-300 dark:border-zinc-800 p-6 rounded-lg shadow-md dark:shadow-black/70 max-w-sm z-40">
+    <div className="fixed bottom-0 right-0 m-6 bg-zinc-950 border-b-4 border-r-4 border-indigo-800 p-6 rounded-lg shadow-md z-40">
       <div className="flex justify-start mx-2 mb-2">
-        <p className="text-base text-zinc-600 dark:text-zinc-400 bg-zinc-200 dark:bg-zinc-800 px-2 rounded-md">
+        <p className="text-base text-zinc-400 bg-zinc-800 px-2 rounded-md">
           Powered by{" "}
           <a href="https://groq.com/" rel="noreferrer noopener" target="_blank">
             <GroqLogo
               data-tooltip-id="groqtooltip"
-              className="inline h-8 w-8 mx-1 text-black dark:text-white"
+              className="inline h-8 w-8 mx-1 text-white"
             />
             <Tooltip
               id="groqtooltip"
@@ -121,10 +117,10 @@ const Chatbot = () => {
         {responses.map((response, index) => (
           <div
             key={index}
-            className={`flex items-start space-x-3 p-3 m-2 max-w-96 rounded-lg border-b-4 border-r-4 border-indigo-800/50 ${
+            className={`flex items-start space-x-3 p-3 m-2 max-w-96 rounded-lg border-b-4 border-r-4 ${
               response.role === "assistant"
-                ? "bg-indigo-100 text-indigo-800"
-                : "bg-zinc-200 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 w-max flex-row-reverse"
+                ? "bg-indigo-800 text-indigo-200 border-indigo-700"
+                : "bg-zinc-800 text-zinc-200 border-zinc-700 flex-row-reverse"
             }`}
           >
             {response.role === "assistant" && (
@@ -134,9 +130,25 @@ const Chatbot = () => {
                 className="h-10 w-10 rounded-full"
               />
             )}
-            <p className="font-semibold text-base md:text-xl">
+            <ReactMarkdown
+              components={{
+                code: ({ node, inline, children, ...props }) => {
+                  return !inline ? (
+                    <div className="relative rounded-md shadow-sm font-mono font-normal text-sm bg-zinc-900 max-w-screen-sm overflow-auto">
+                      <pre className="p-4 rounded-md bg-zinc-950/70 text-white overflow-auto">
+                        <code {...props}>{children}</code>
+                      </pre>
+                    </div>
+                  ) : (
+                    <code {...props}>{children}</code>
+                  );
+                },
+              }}
+              remarkPlugins={[gfm]}
+              className="font-semibold text-base md:text-xl whitespace-pre-wrap"
+            >
               {response.content}
-            </p>
+            </ReactMarkdown>
           </div>
         ))}
         {isTyping && <div className="typing-animation">Arda is typing...</div>}
@@ -145,7 +157,7 @@ const Chatbot = () => {
       <div className="flex items-center space-x-2">
         <InformationCircleIcon
           data-tooltip-id="disclaimerTooltip"
-          className="h-6 w-6 text-zinc-700  dark:text-zinc-300 cursor-pointer hover:scale-110"
+          className="h-6 w-6 text-zinc-300 cursor-pointer hover:scale-110"
         />
         <Tooltip
           id="disclaimerTooltip"
@@ -157,6 +169,38 @@ const Chatbot = () => {
           occasionally provide inaccurate details about my background and
           professional endeavors. Your understanding is appreciated.
         </Tooltip>
+        <div className="flex space-x-2">
+          <button
+            onClick={() => setTone("Normal")}
+            className={`px-2 py-1 rounded-md ${
+              tone === "Normal"
+                ? "bg-indigo-800 text-indigo-200"
+                : "bg-zinc-800 text-zinc-400"
+            }`}
+          >
+            Normal
+          </button>
+          <button
+            onClick={() => setTone("Friendly")}
+            className={`px-2 py-1 rounded-md ${
+              tone === "Friendly"
+                ? "bg-indigo-800 text-indigo-200"
+                : "bg-zinc-800 text-zinc-400"
+            }`}
+          >
+            Friendly
+          </button>
+          <button
+            onClick={() => setTone("Professional")}
+            className={`px-2 py-1 rounded-md ${
+              tone === "Professional"
+                ? "bg-indigo-800 text-indigo-200"
+                : "bg-zinc-800 text-zinc-400"
+            }`}
+          >
+            Professional
+          </button>
+        </div>
         <input
           value={message}
           onChange={(e) => setMessage(e.target.value)}
@@ -165,7 +209,7 @@ const Chatbot = () => {
               sendMessage();
             }
           }}
-          className="bg-white dark:bg-zinc-800 text-black dark:text-white flex-1 px-4 py-2 border border-zinc-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-600"
+          className="bg-zinc-800 text-zinc-200 flex-1 px-4 py-2 border border-zinc-700 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-600"
           placeholder="Type your message..."
           disabled={isTyping}
         />
@@ -179,7 +223,7 @@ const Chatbot = () => {
       </div>
       <button
         onClick={() => setIsExpanded(false)}
-        className="absolute top-0 right-0 m-1 p-2 text-zinc-700 dark:text-zinc-300 hover:text-zinc-900"
+        className="absolute top-0 right-0 m-1 p-2 text-zinc-300 hover:text-zinc-100"
       >
         <XMarkIcon className="h-6 w-6" />
       </button>

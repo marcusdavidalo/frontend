@@ -21,7 +21,7 @@ const Sidebar = ({
 
   return (
     <div
-      className={` text-zinc-700 dark:text-zinc-300 h-[80vh] transition-all duration-200 ease-in-out z-10 ${
+      className={` text-zinc-700 dark:text-zinc-300 h-[80vh] transition-all duration-200 ease-in-out z-10 max-w-[50%] ${
         isCollapsed ? "min-w-0 p-1" : "min-w-max p-4"
       } relative`}
     >
@@ -58,7 +58,9 @@ const Sidebar = ({
               onClick={() => onConversationClick(conversation)}
             >
               <span
-                className={`px-2 ${isCollapsed ? "hidden" : ""}`}
+                className={`px-2 max-w-[50%] whitespace-nowrap ${
+                  isCollapsed ? "hidden" : ""
+                }`}
                 title={conversation.name}
               >
                 {conversation.name

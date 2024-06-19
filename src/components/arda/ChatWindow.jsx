@@ -6,7 +6,6 @@ import { PencilIcon, TrashIcon, WifiIcon } from "@heroicons/react/24/solid";
 
 const MAX_TOKENS = 8196;
 const MAX_HISTORY = 5;
-// const MAX_CHAR_LIMIT = 8000;
 
 const ChatWindow = ({
   groq,
@@ -67,7 +66,7 @@ const ChatWindow = ({
       const promptMessages = [
         {
           role: "system",
-          content: `Speech Tone: ${tone} \nAdditional Information: \nCurrent Local Time: ${currentTimeLocal}\nCurrent Time (UTC): ${currentTimeUTC}\nUser's Timezone: ${userTimezone}\nModel used: ${models[0]}`,
+          content: `Tone: ${tone} \nAdditional Information: \nCurrent Local Time: ${currentTimeLocal}\nCurrent Time (UTC): ${currentTimeUTC}\nUser's Timezone: ${userTimezone}\nModel used: ${models[0]}`,
         },
         {
           role: "system",

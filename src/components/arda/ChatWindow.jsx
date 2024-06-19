@@ -403,7 +403,7 @@ const ChatWindow = ({
   const codeBlock = {
     code: ({ node, inline, children, ...props }) => {
       return !inline ? (
-        <div className="relative rounded-md shadow-sm font-mono font-normal text-sm bg-zinc-900">
+        <div className="relative rounded-md shadow-sm font-mono font-normal text-sm bg-zinc-900 max-w-screen-sm overflow-auto">
           <button
             className="absolute right-0 top-0 m-2 text-sm bg-indigo-800 text-white rounded px-2 py-1"
             onClick={() => copy(children)}
@@ -424,7 +424,7 @@ const ChatWindow = ({
   };
 
   return (
-    <div className="flex flex-col w-full h-[80vh] relative bg-zinc-100 dark:bg-zinc-950/50 text-zinc-900 dark:text-zinc-100 p-4">
+    <div className="relative flex flex-col w-full h-[80vh] text-zinc-900 dark:text-zinc-100 p-4">
       <div className="overflow-auto flex-1 rounded-md" ref={chatWindowRef}>
         <div className="flex items-center fixed z-50 bg-zinc-200 dark:bg-zinc-900 rounded-full m-2">
           <button
@@ -466,7 +466,7 @@ const ChatWindow = ({
               }`}
             >
               <div
-                className={`w-[80%] break-words p-3 rounded-lg shadow ${
+                className={`w-[80%] p-3 rounded-lg shadow ${
                   msg.role === "assistant"
                     ? "bg-indigo-200 dark:bg-indigo-950 text-indigo-800 dark:text-indigo-200"
                     : " bg-zinc-200 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200"
@@ -477,7 +477,7 @@ const ChatWindow = ({
                     <textarea
                       value={editedMessage}
                       onChange={(e) => setEditedMessage(e.target.value)}
-                      className="w-full h-max p-2 border rounded bg-zinc-200 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200"
+                      className="w-full h-96 p-2 border rounded bg-zinc-200 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200"
                     />
                     <div className="flex justify-end space-x-2 mt-2">
                       <button

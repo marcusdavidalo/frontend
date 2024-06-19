@@ -21,12 +21,12 @@ const Sidebar = ({
 
   return (
     <div
-      className={`bg-zinc-100 dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 h-[80vh] transition-all duration-200 ease-in-out ${
+      className={` text-zinc-700 dark:text-zinc-300 h-[80vh] transition-all duration-200 ease-in-out z-10 ${
         isCollapsed ? "min-w-0 p-1" : "min-w-max p-4"
       } relative`}
     >
       <button
-        className="absolute top-1/2 right-0 -mr-4 bg-zinc-100 dark:bg-zinc-900 rounded-full p-1 transition-colors duration-300 z-10"
+        className="absolute top-1/2 right-0 -mr-4  rounded-full p-1 transition-colors duration-300 -z-10"
         onClick={toggleCollapse}
       >
         {isCollapsed ? (
@@ -47,14 +47,14 @@ const Sidebar = ({
           +
         </button>
       </div>
-      <div className="overflow-hidden">
+      <div className="overflow-auto h-[calc(100%-3rem)]">
+        {" "}
+        {/* Adjust height to make room for header */}
         <ul>
           {conversations.map((conversation, index) => (
             <li
               key={index}
-              className={`bg-zinc-300 dark:bg-zinc-950/50 text-zinc-700 dark:text-zinc-300 rounded-md py-1 mb-2 cursor-pointer hover:bg-zinc-950 flex justify-between items-center w-max transition-all duration-100 ease-in-out min-w-full ${
-                isCollapsed ? "hidden overflow-hidden" : ""
-              }`}
+              className="bg-zinc-300 dark:bg-zinc-950/50 text-zinc-700 dark:text-zinc-300 rounded-md py-1 mb-2 cursor-pointer hover:bg-zinc-950 flex justify-between items-center transition-all duration-100 ease-in-out w-full"
               onClick={() => onConversationClick(conversation)}
             >
               <span

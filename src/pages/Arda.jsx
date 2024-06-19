@@ -111,7 +111,7 @@ const Arda = () => {
   useTitle("Arda");
 
   return (
-    <div className="flex h-full">
+    <div className="flex h-full max-w-screen overflow-x-hidden bg-zinc-100 dark:bg-zinc-950/50">
       <Sidebar
         conversations={savedConversations}
         onConversationClick={loadConversation}

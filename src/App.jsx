@@ -1,14 +1,10 @@
 import React, { useState, useEffect, Suspense } from "react";
-import Layout from "./components/Layout";
-import Loader from "./components/Loader";
-import Chatbot from "./components/Chatbot";
+import Layout from "./components/other/Layout";
+import Loader from "./components/reusable/Loader";
 import { AllRoutes } from "./routes/AllRoutes";
-import { useLocation } from "react-router-dom";
 import "./App.css";
 
 function App() {
-  const location = useLocation();
-  const isArdaRoute = location.pathname === "/arda";
   const [isDarkMode, setIsDarkMode] = useState(() => {
     const savedIsDarkMode = localStorage.getItem("isDarkMode");
     if (savedIsDarkMode !== null) {
@@ -43,7 +39,6 @@ function App() {
     >
       <Layout isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode}>
         <Suspense fallback={<Loader />}>
-          {!isArdaRoute && <Chatbot />}
           <AllRoutes />
         </Suspense>
       </Layout>

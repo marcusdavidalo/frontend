@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import loadingMessagesData from "../data/loader/loadingMessages.json";
+import loadingMessagesData from "../../data/loader/loadingMessages.json";
 
 const Loader = () => {
   const [width, setWidth] = useState(0);

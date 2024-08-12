@@ -3,12 +3,13 @@ import ReactMarkdown from "react-markdown";
 import gfm from "remark-gfm";
 import copy from "clipboard-copy";
 import { PencilIcon, TrashIcon, WifiIcon } from "@heroicons/react/24/solid";
+import Groq from "groq-sdk";
 
-const MAX_TOKENS = 8196;
+const MAX_TOKENS = 1024;
 const MAX_HISTORY = 5;
+const MAX_SEARCH_RESULTS = 3;
 
 const ChatWindow = ({
-  groq,
   currentConversation,
   onConversationUpdate,
   getShortName,
@@ -23,6 +24,22 @@ const ChatWindow = ({
 
   const chatEndRef = useRef(null);
   const chatWindowRef = useRef(null);
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
+    }
+  };
+
+  const groq = useMemo(
+    () =>
+      new Groq({
+        apiKey: process.env.REACT_APP_GROQ,
+        dangerouslyAllowBrowser: true,
+      }),
+    []
+  );
 
   const getCurrentTime = useCallback(
     () => ({
@@ -39,7 +56,7 @@ const ChatWindow = ({
       const promptMessages = [
         {
           role: "system",
-          content: `Tone: Normal \nAdditional Information: \nCurrent Local Time: ${local}\nCurrent Time (UTC): ${utc}\nUser's Timezone: ${timezone}\nModel used: ${models[0]}`,
+          content: `Only use information when asked: \nTone: Normal \nAdditional Information: \nCurrent Local Time: ${local}\nCurrent Time (UTC): ${utc}\nUser's Timezone: ${timezone}\nModel used: ${models[0]} \nWhen asked about time and date, always account for Daylight Savings Time in countries that use DST and break down the calculation for more accuracy.`,
         },
         {
           role: "system",
@@ -51,41 +68,44 @@ const ChatWindow = ({
         },
         {
           role: "system",
-          content: "Provide accurate, detailed, and in-depth information",
+          content:
+            "Provide accurate, detailed, and in-depth information, only reply with what is being asked or talked about in a concise but informative way.",
         },
         ...updatedMessages.slice(-MAX_HISTORY),
       ];
 
-      for (let model of models) {
-        try {
-          return await groq.chat.completions.create({
-            messages: promptMessages,
-            model,
-            temperature: 1.25,
-            max_tokens: MAX_TOKENS,
-            top_p: 1,
-            stop: null,
-          });
-        } catch (error) {
-          console.error(`Error with model ${model}:`, error);
-        }
+      try {
+        return await groq.chat.completions.create({
+          messages: promptMessages,
+          model: models[0],
+          temperature: 1.2,
+          max_tokens: MAX_TOKENS,
+          top_p: 1,
+          stop: null,
+        });
+      } catch (error) {
+        console.error("Error with model", models[0], ":", error.message);
+        throw error;
       }
     },
     [groq.chat.completions, models, useInternet, getCurrentTime]
   );
 
   const fetchGoogleSearchResults = useCallback(async (query) => {
-    const apiKey = process.env.REACT_APP_GOOGLE;
-    const searchEngineId = process.env.REACT_APP_SEARCH_ENGINE_ID;
-    const url = `https://www.googleapis.com/customsearch/v1?q=${query}&key=${apiKey}&cx=${searchEngineId}`;
-
     try {
-      const response = await fetch(url);
+      const response = await fetch(
+        `https://www.googleapis.com/customsearch/v1?q=${query}&key=${process.env.REACT_APP_GOOGLE}&cx=${process.env.REACT_APP_SEARCH_ENGINE_ID}&num=${MAX_SEARCH_RESULTS}`
+      );
+      if (!response.ok) {
+        throw new Error(
+          `Error fetching search results: ${response.status} ${response.statusText}`
+        );
+      }
       const data = await response.json();
-      return data.items;
+      return data.items.slice(0, MAX_SEARCH_RESULTS);
     } catch (error) {
       console.error("Error fetching search results:", error);
-      return "";
+      return [];
     }
   }, []);
 
@@ -113,17 +133,18 @@ const ChatWindow = ({
             content:
               "Make 1 short title for a conversation about:" +
               messageContent +
-              "only the title, no extra conversations",
+              " only the title, no extra conversations",
           },
         ]);
         updatedConversation.name = shortName.substring(0, 30);
       }
 
       onConversationUpdate(updatedConversation);
-      setIsTyping(true);
       setMessage("");
 
-      let searchResults = "";
+      setIsTyping(true);
+
+      let searchResults = [];
       if (useInternet) {
         const keywordsPrompt = await groq.chat.completions.create({
           messages: [
@@ -134,7 +155,7 @@ const ChatWindow = ({
                 "Decide if a search is necessary based on the message given, especially when it requires the latest information, respond only with a 'yes' if its necessary and a 'no' if not, no extras like other words or symbols",
             },
           ],
-          model: models[1],
+          model: models[0],
           temperature: 0.5,
           max_tokens: 3,
           top_p: 1,
@@ -151,7 +172,7 @@ const ChatWindow = ({
               {
                 role: "user",
                 content:
-                  "Determine the most appropriate search term for searching relevant information based on my message, only say that search term and nothing else, no other words or sentences, dont use double quotations always, only on ones that need complete accuracy",
+                  "Determine the most appropriate search term for searching relevant information based on my message, only say that search term and nothing else, no other words or sentences, don't use double quotations always, only on ones that need complete accuracy",
               },
             ],
             model: models[0],
@@ -163,29 +184,33 @@ const ChatWindow = ({
 
           const keywordsText = keywords?.choices[0]?.message?.content || "";
           if (keywordsText) {
-            searchResults = JSON.stringify(
-              await fetchGoogleSearchResults(keywordsText)
-            );
+            searchResults = await fetchGoogleSearchResults(keywordsText);
           }
         }
       }
 
-      const chatCompletion = await sendChatCompletion(
-        conversationHistory,
-        searchResults
-      );
+      try {
+        const chatCompletion = await sendChatCompletion(
+          conversationHistory,
+          searchResults
+        );
 
-      setIsTyping(false);
-      onConversationUpdate({
-        ...updatedConversation,
-        messages: [
-          ...updatedConversation.messages,
-          {
-            role: "assistant",
-            content: chatCompletion?.choices[0]?.message?.content || "",
-          },
-        ],
-      });
+        setIsTyping(false);
+        onConversationUpdate({
+          ...updatedConversation,
+          messages: [
+            ...updatedConversation.messages,
+            {
+              role: "assistant",
+              content: chatCompletion?.choices[0]?.message?.content || "",
+            },
+          ],
+        });
+      } catch (error) {
+        setIsTyping(false);
+        console.error("Error in chat completion:", error);
+        console.dir(error, { depth: null });
+      }
     },
     [
       currentConversation,
@@ -372,13 +397,10 @@ const ChatWindow = ({
         <textarea
           value={message}
           onChange={(e) => setMessage(e.target.value)}
-          onKeyPress={(e) => {
-            if (e.key === "Enter" && !e.shiftKey) {
-              e.preventDefault();
-              sendMessage();
-            }
-          }}
-          className="flex-1 border rounded bg-white dark:bg-zinc-800 px-2 py-2 outline-none inset-0 resize-none shadow-none"
+          onKeyDown={handleKeyDown}
+          className="w-full p-2 border border-zinc-300 dark:border-zinc-700 rounded-lg resize-none bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100"
+          placeholder="Type your message..."
+          rows="3"
         />
         <button
           onClick={() => sendMessage()}

@@ -1,6 +1,6 @@
 import React, { lazy, Suspense } from "react";
 import { Routes, Route } from "react-router-dom";
-import Loader from "../components/Loader";
+import Loader from "../components/reusable/Loader";
 
 // Lazy loading pages
 const Home = lazy(() => import("../pages/Home"));

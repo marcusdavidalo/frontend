@@ -1,137 +1,60 @@
-import React, { useState, useEffect, useMemo } from "react";
-import Groq from "groq-sdk";
-import Sidebar from "../components/arda/Sidebar";
-import ChatWindow from "../components/arda/ChatWindow";
-import { v4 as uuidv4 } from "uuid";
+import React, { useState, useEffect } from "react";
+import ChatWindow from "../components/main/Chatbox";
 import useTitle from "../hooks/useTitle";
-
-const groq = new Groq({
-  apiKey: process.env.REACT_APP_GROQ,
-  dangerouslyAllowBrowser: true,
-});
-
-const GOOGLE_API_KEY = process.env.REACT_APP_GOOGLE;
-const CX = process.env.REACT_APP_SEARCH_ENGINE_ID;
+import { getGroqModels } from "../utils/groqClient";
 
 const Arda = () => {
-  const [savedConversations, setSavedConversations] = useState([]);
-  const [currentConversation, setCurrentConversation] = useState({
-    id: uuidv4(),
+  const [conversation, setConversation] = useState({
+    id: Date.now(),
     messages: [],
   });
-  const [searchQuery, setSearchQuery] = useState("");
-  const [searchResults, setSearchResults] = useState([]);
-
-  const models = useMemo(
-    () => [
-      "llama3-70b-8192",
-      "llama3-8b-8192",
-      "mixtral-8x7b-32768",
-      "gemma-7b-it",
-    ],
-    []
-  );
-
-  useEffect(() => {
-    const savedConversations = localStorage.getItem("conversations");
-    if (savedConversations) {
-      setSavedConversations(JSON.parse(savedConversations));
-    }
-  }, []);
-
-  const saveConversation = (conversations) => {
-    localStorage.setItem("conversations", JSON.stringify(conversations));
-  };
-
-  const loadConversation = (conversation) => {
-    setCurrentConversation(conversation);
-  };
-
-  const updateCurrentConversation = (updatedConversation) => {
-    setCurrentConversation(updatedConversation);
-
-    const conversationIndex = savedConversations.findIndex(
-      (conversation) => conversation.id === updatedConversation.id
-    );
-
-    if (conversationIndex !== -1) {
-      const updatedSavedConversations = [...savedConversations];
-      updatedSavedConversations[conversationIndex] = updatedConversation;
-      setSavedConversations(updatedSavedConversations);
-      saveConversation(updatedSavedConversations);
-    } else {
-      const newSavedConversations = [
-        ...savedConversations,
-        updatedConversation,
-      ];
-      setSavedConversations(newSavedConversations);
-      saveConversation(newSavedConversations);
-    }
-  };
-
-  const deleteConversation = (index) => {
-    const updatedConversations = [...savedConversations];
-    updatedConversations.splice(index, 1);
-    setSavedConversations(updatedConversations);
-    saveConversation(updatedConversations);
-  };
-
-  const renameConversation = (index) => {
-    const newName = prompt("Enter the new name for the conversation:");
-    if (newName !== null && newName.trim() !== "") {
-      const updatedConversations = [...savedConversations];
-      updatedConversations[index].name = newName;
-      setSavedConversations(updatedConversations);
-      saveConversation(updatedConversations);
-    }
-  };
-
-  const startNewConversation = () => {
-    setCurrentConversation({ id: uuidv4(), messages: [] });
-  };
-
-  const getShortName = async (messages) => {
-    try {
-      const response = await groq.chat.completions.create({
-        messages,
-        model: models[0],
-        temperature: 0.7,
-        max_tokens: 100,
-        top_p: 1,
-        stop: null,
-      });
-      const shortName = response.choices[0]?.message?.content.trim();
-      return shortName || "Untitled Conversation";
-    } catch (error) {
-      console.error("Error fetching short name from Groq:", error);
-      return "Untitled Conversation";
-    }
-  };
+  const [models, setModels] = useState([]);
+  const [systemPrompt, setSystemPrompt] = useState("");
 
   useTitle("Arda");
 
+  useEffect(() => {
+    const loadModels = async () => {
+      const availableModels = await getGroqModels();
+      setModels(availableModels);
+    };
+
+    loadModels();
+  }, []);
+
+  useEffect(() => {
+    const updateSystemPrompt = () => {
+      const now = new Date();
+      const utcTime = now.toUTCString();
+      const localTime = now.toLocaleString();
+      setSystemPrompt(
+        `You are a helpful AI assistant named Arda. Current UTC time is ${utcTime}, and local time is ${localTime}.`
+      );
+    };
+
+    updateSystemPrompt();
+    const interval = setInterval(updateSystemPrompt, 60000); // update every minute
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const handleConversationUpdate = (updatedConversation) => {
+    setConversation(updatedConversation);
+    // If you want to save the conversation to localStorage:
+    // localStorage.setItem("currentConversation", JSON.stringify(updatedConversation));
+  };
+
   return (
-    <div className="flex h-full max-w-screen overflow-x-hidden bg-zinc-100 dark:bg-zinc-950/50">
-      <Sidebar
-        conversations={savedConversations}
-        onConversationClick={loadConversation}
-        onDeleteConversation={deleteConversation}
-        onRenameConversation={renameConversation}
-        onNewConversation={startNewConversation}
-      />
-      <ChatWindow
-        currentConversation={currentConversation}
-        onConversationUpdate={updateCurrentConversation}
-        searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
-        searchResults={searchResults}
-        setSearchResults={setSearchResults}
-        models={models}
-        groq={groq}
-        GOOGLE_API_KEY={GOOGLE_API_KEY}
-        CX={CX}
-        getShortName={getShortName} // Pass the function to ChatWindow
-      />
+    <div className="h-screen bg-zinc-100 dark:bg-zinc-950/50">
+      <div className="flex-grow">
+        <ChatWindow
+          conversation={conversation}
+          onConversationUpdate={handleConversationUpdate}
+          models={models}
+          systemPrompt={systemPrompt}
+          onSystemPromptChange={setSystemPrompt}
+        />
+      </div>
     </div>
   );
 };

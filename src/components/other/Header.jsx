@@ -34,7 +34,7 @@ const Header = ({ isDarkMode, toggleDarkMode }) => {
     >
       {({ open }) => (
         <>
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 z-[5000]">
             <div className="grid grid-cols-4 h-16 items-center">
               <div className="flex justify-center col-start-2 col-end-4 row-start-1 sm:col-start-1 sm:col-end-2 sm:justify-start">
                 <div className="flex flex-shrink-0 items-center">

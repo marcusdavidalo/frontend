@@ -45,7 +45,7 @@ const Arda = () => {
   };
 
   return (
-    <div className="h-screen bg-zinc-100 dark:bg-zinc-950/50">
+    <div className="max-h-screen bg-zinc-100 dark:bg-zinc-950/50">
       <div className="flex-grow">
         <ChatWindow
           conversation={conversation}

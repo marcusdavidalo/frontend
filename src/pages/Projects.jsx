@@ -1,31 +1,105 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import useTitle from "../hooks/useTitle";
-import { ChevronDownIcon } from "@heroicons/react/24/solid";
+import {
+  ChevronDownIcon,
+  PlusIcon,
+  MinusIcon,
+} from "@heroicons/react/24/solid";
 
-const ProjectCard = ({ title, description, link }) => (
-  <div className="bg-white dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-800 p-6 rounded-lg shadow-md dark:shadow-black/70 transform transition duration-500 ease-in-out hover:scale-105">
-    <div className="mt-4">
-      <h3 className="text-xl font-bold text-zinc-900 dark:text-zinc-200">
+const fetchRepositoryDetails = async (repoFullName) => {
+  try {
+    const { data } = await axios.get(
+      `https://api.github.com/repos/${repoFullName}`
+    );
+    return data;
+  } catch (error) {
+    console.error(`Error fetching repo details for ${repoFullName}`, error);
+    return null;
+  }
+};
+
+const fetchCommits = async (repoFullName) => {
+  try {
+    const { data } = await axios.get(
+      `https://api.github.com/repos/${repoFullName}/commits`
+    );
+    return data;
+  } catch (error) {
+    console.error(`Error fetching commits for ${repoFullName}`, error);
+    return [];
+  }
+};
+
+const ProjectCard = ({ title, description, link, repoFullName }) => {
+  const [commits, setCommits] = useState([]);
+
+  useEffect(() => {
+    fetchCommits(repoFullName).then(setCommits);
+  }, [repoFullName]);
+
+  const hasCommits = commits.length > 0;
+  const latestCommit = hasCommits ? commits[0].commit.message : "No commits";
+
+  return (
+    <div className="bg-white dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-800 p-6 rounded-lg shadow-md dark:shadow-black/70 transform transition duration-300 hover:scale-[1.02]">
+      <h3 className="text-xl font-semibold text-zinc-900 dark:text-zinc-200">
         {title}
       </h3>
-      <p className="text-lg text-zinc-600 dark:text-zinc-400 mt-2">
+      <p className="text-sm text-zinc-600 dark:text-zinc-400 mt-2">
         {description
-          ? description.length > 100
-            ? `${description.substring(0, 100)}...`
-            : description
+          ? description.substring(0, 100) + "..."
           : "No description available."}
       </p>
+      <div className="mt-4 flex items-center space-x-2">
+        <span
+          className={`text-sm font-medium ${
+            hasCommits ? "text-green-600" : "text-red-600"
+          }`}
+        >
+          {hasCommits ? (
+            <PlusIcon className="w-5 h-5 inline" />
+          ) : (
+            <MinusIcon className="w-5 h-5 inline" />
+          )}
+          {hasCommits ? " Recent Activity" : " No Recent Activity"}
+        </span>
+        {hasCommits && (
+          <span className="text-xs text-zinc-500 dark:text-zinc-400">
+            {latestCommit}
+          </span>
+        )}
+      </div>
       <a
         href={link}
         target="_blank"
         rel="noopener noreferrer"
-        className="mt-4 inline-flex items-center justify-center px-6 py-2 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700"
+        className="mt-4 inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 transition focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
       >
         View Project
       </a>
     </div>
-  </div>
+  );
+};
+
+const SortButton = ({ field, sort, handleSort, label }) => (
+  <button
+    onClick={() => handleSort(field)}
+    className="flex items-center space-x-1 px-3 py-2 bg-white dark:bg-zinc-950 rounded-md shadow-sm"
+  >
+    <span className={`text-zinc-700 dark:text-zinc-200`}>
+      {sort.field === field
+        ? sort.direction === "desc"
+          ? `${label} ▲`
+          : `${label} ▼`
+        : label}
+    </span>
+    <ChevronDownIcon
+      className={`w-5 h-5 text-zinc-400 ${
+        sort.field === field ? "rotate-180" : ""
+      }`}
+    />
+  </button>
 );
 
 const Projects = () => {
@@ -38,8 +112,17 @@ const Projects = () => {
   useEffect(() => {
     axios
       .get("https://api.github.com/users/marcusdavidalo/repos")
-      .then((response) => {
-        setProjects(response.data);
+      .then(async (response) => {
+        const repos = response.data;
+        const detailedRepos = await Promise.all(
+          repos.map(async (repo) => {
+            const details = await fetchRepositoryDetails(
+              `${repo.owner.login}/${repo.name}`
+            );
+            return { ...repo, ...details };
+          })
+        );
+        setProjects(detailedRepos);
       })
       .catch((error) => {
         console.error("Error fetching repos", error);
@@ -94,9 +177,8 @@ const Projects = () => {
 
   const handlePageChange = (pageNumber) => setCurrentPage(pageNumber);
 
-  const handleProjectsPerPageChange = (e) => {
-    setProjectsPerPage(e.target.value);
-  };
+  const handleProjectsPerPageChange = (e) =>
+    setProjectsPerPage(Number(e.target.value));
 
   useTitle("Projects");
 
@@ -106,67 +188,36 @@ const Projects = () => {
         <h1 className="text-4xl font-extrabold text-zinc-900 dark:text-zinc-200 mb-8">
           My Projects
         </h1>
-        <div className="flex flex-col md:flex-row md:justify-between justify-start items-center mb-4">
-          <div className="flex items-center space-x-2 mb-2 md:mb-0">
-            <span className="text-sm font-medium text-zinc-700 dark:text-zinc-200">
-              Sort by:
-            </span>
-            <button
-              onClick={() => handleSort("name")}
-              className="flex items-center space-x-1 px-3 py-2 bg-white dark:bg-zinc-950 rounded-md shadow-sm"
-            >
-              <span className="text-zinc-700 dark:text-zinc-200">
-                {sort.field === "name"
-                  ? sort.direction === "desc"
-                    ? "Name ▲"
-                    : "Name ▼"
-                  : "Name"}
-              </span>
-              <ChevronDownIcon
-                className={`w-5 h-5 text-zinc-400 ${
-                  sort.field === "name" ? "rotate-180" : ""
-                }`}
-              />
-            </button>
-            <button
-              onClick={() => handleSort("created_at")}
-              className="flex items-center space-x-1 px-3 py-2 bg-white dark:bg-zinc-950 rounded-md shadow-sm"
-            >
-              <span className="text-zinc-700 dark:text-zinc-200">
-                {sort.field === "created_at"
-                  ? sort.direction === "desc"
-                    ? "Created ▲"
-                    : "Created ▼"
-                  : "Created"}
-              </span>
-              <ChevronDownIcon
-                className={`w-5 h-5 text-zinc-400 ${
-                  sort.field === "created_at" ? "rotate-180" : ""
-                }`}
-              />
-            </button>
-            <button
-              onClick={() => handleSort("updated_at")}
-              className="flex items-center space-x-1 px-3 py-2 bg-white dark:bg-zinc-950 rounded-md shadow-sm"
-            >
-              <span className="text-zinc-700 dark:text-zinc-200">
-                {sort.field === "updated_at"
-                  ? sort.direction === "desc"
-                    ? "Updated ▲"
-                    : "Updated ▼"
-                  : "Updated"}
-              </span>
-              <ChevronDownIcon
-                className={`w-5 h-5 text-zinc-400 ${
-                  sort.field === "updated_at" ? "rotate-180" : ""
-                }`}
-              />
-            </button>
+        <div className="flex flex-col md:flex-row md:justify-between items-center mb-6">
+          <div className="flex items-center space-x-4 mb-4 md:mb-0">
+            <SortButton
+              field="name"
+              sort={sort}
+              handleSort={handleSort}
+              label="Name"
+            />
+            <SortButton
+              field="created_at"
+              sort={sort}
+              handleSort={handleSort}
+              label="Created"
+            />
+            <SortButton
+              field="updated_at"
+              sort={sort}
+              handleSort={handleSort}
+              label="Updated"
+            />
           </div>
-          <div className="space-x-2 hidden md:flex">
-            <span className="flex items-center space-x-1 px-3 py-2 bg-white dark:bg-zinc-950 dark:text-zinc-200 rounded-md shadow-sm">
-              Total projects: {projects.length}
-            </span>
+          <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-4">
+            <div className="flex items-center space-x-2">
+              <span className="text-sm text-zinc-700 dark:text-zinc-200">
+                Total projects:
+              </span>
+              <span className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
+                {projects.length}
+              </span>
+            </div>
             <input
               type="search"
               value={searchTerm}
@@ -179,12 +230,25 @@ const Projects = () => {
               onChange={handleProjectsPerPageChange}
               className="px-3 py-2 bg-white dark:bg-zinc-950 dark:text-zinc-200 rounded-md shadow-sm"
             >
-              <option value="3">3 per page</option>
-              <option value="6">6 per page</option>
-              <option value="9">9 per page</option>
+              <option value={3}>3 per page</option>
+              <option value={6}>6 per page</option>
+              <option value={9}>9 per page</option>
             </select>
           </div>
-          <div className="flex space-x-2">
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {currentProjects.map((project) => (
+            <ProjectCard
+              key={project.id}
+              title={project.name}
+              description={project.description}
+              link={project.html_url}
+              repoFullName={`${project.owner.login}/${project.name}`}
+            />
+          ))}
+        </div>
+        <div className="flex justify-center mt-8">
+          <nav className="flex space-x-2">
             <button
               onClick={() =>
                 handlePageChange(
@@ -192,7 +256,7 @@ const Projects = () => {
                 )
               }
               disabled={currentPage === 1}
-              className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md shadow-sm hover:bg-indigo-700 transition focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
             >
               Previous
             </button>
@@ -200,8 +264,10 @@ const Projects = () => {
               <button
                 key={number}
                 onClick={() => handlePageChange(number)}
-                className={`inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white ${
-                  currentPage === number ? "bg-indigo-600" : "bg-indigo-400"
+                className={`px-4 py-2 text-sm font-medium rounded-md shadow-sm transition ${
+                  currentPage === number
+                    ? "bg-indigo-600 text-white"
+                    : "bg-zinc-300 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-200"
                 } hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
               >
                 {number}
@@ -220,21 +286,11 @@ const Projects = () => {
                 currentPage ===
                 Math.ceil(sortedProjects.length / projectsPerPage)
               }
-              className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md shadow-sm hover:bg-indigo-700 transition focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
             >
               Next
             </button>
-          </div>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {currentProjects.map((project) => (
-            <ProjectCard
-              key={project.id}
-              title={project.name}
-              description={project.description}
-              link={project.html_url}
-            />
-          ))}
+          </nav>
         </div>
       </div>
     </div>

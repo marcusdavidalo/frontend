@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 
 const MessageInput = ({ onSendMessage }) => {
   const [input, setInput] = useState("");
@@ -18,8 +18,8 @@ const MessageInput = ({ onSendMessage }) => {
   };
 
   return (
-    <div className="flex justify-center">
-      <div className="grid grid-cols-12 items-center gap-2 p-4 border-t border-zinc-300 dark:border-zinc-700 absolute w-full h-max bottom-0 container rounded-lg">
+    <div className="flex justify-center max-h-fit">
+      <div className="grid grid-cols-12 items-center gap-2 p-4 border-t border-zinc-300 dark:border-zinc-700 w-full container rounded-lg">
         <textarea
           value={input}
           onChange={(e) => setInput(e.target.value)}

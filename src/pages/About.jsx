@@ -49,7 +49,7 @@ const About = () => {
             <h2 className="text-4xl font-bold text-zinc-900 dark:text-zinc-200 mb-6">
               Marcus David Alo
             </h2>
-            <div className="text-lg space-y-6 leading-relaxed text-zinc-700 dark:text-zinc-400">
+            <div className="text-xl space-y-6 leading-relaxed text-zinc-700 dark:text-zinc-400">
               <p>
                 I am an enthusiastic beginner web developer with a solid grasp
                 of JavaScript, React, and modern web technologies. I'm

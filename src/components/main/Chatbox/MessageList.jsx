@@ -24,15 +24,14 @@ const MessageList = ({
   const handleSave = (index) => {
     onSaveEdit(index, editInput);
     setEditIndex(null);
-    // Delete all messages after the edited message
     for (let i = messages.length - 1; i > index; i--) {
       onDeleteMessage(i);
     }
   };
 
   return (
-    <div className="flex justify-center flex-grow overflow-y-auto p-4 space-y-4">
-      <div className="container">
+    <div className="flex justify-center flex-grow p-4">
+      <div className="container overflow-y-scroll h-[75vh]">
         {messages.map((message, index) => (
           <div
             key={index}
@@ -41,12 +40,41 @@ const MessageList = ({
             } items-start mb-4`}
           >
             <div
-              className={`relative max-w-xl px-4 mx-10 py-2 rounded-lg ${
+              className={`relative w-[25vh] sm:w-[35vh] md:w-[50vh] lg:w-[75vh] px-4 py-2 rounded-lg ${
                 message.role === "user"
-                  ? "bg-zinc-500 dark:bg-zinc-700 text-white"
+                  ? "bg-zinc-500 dark:bg-zinc-800 text-white"
                   : "bg-zinc-200 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100"
               }`}
             >
+              {message.role === "user" && (
+                <div className="absolute left-[-2rem] top-1/2 transform -translate-y-1/2">
+                  <button
+                    onClick={() => handleMenuToggle(index)}
+                    className="text-white rounded-full w-5 h-5 flex items-center justify-center text-xl"
+                  >
+                    ⋮
+                  </button>
+                  {menuOpen === index && (
+                    <div className="absolute left-6 top-[-50%] w-24 bg-white dark:bg-zinc-700 shadow-lg rounded-lg py-1 z-10">
+                      <button
+                        onClick={() => handleEdit(index)}
+                        className="block w-full text-left px-4 py-2 text-sm text-zinc-700 dark:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-600"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => {
+                          onDeleteMessage(index);
+                          setMenuOpen(null);
+                        }}
+                        className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-zinc-100 dark:hover:bg-zinc-600"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
               {editIndex === index ? (
                 <div>
                   <textarea
@@ -63,40 +91,11 @@ const MessageList = ({
                   </button>
                 </div>
               ) : (
-                <div className="whitespace-pre-wrap space-y-2">
+                <div className="whitespace-pre-wrap space-y-2 overflow-x-scroll">
                   {formatMessage(message.content)}
                 </div>
               )}
             </div>
-            {message.role === "user" && (
-              <div className="ml-2 relative">
-                <button
-                  onClick={() => handleMenuToggle(index)}
-                  className="bg-zinc-600 dark:bg-zinc-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs"
-                >
-                  ⋮
-                </button>
-                {menuOpen === index && (
-                  <div className="absolute right-0 mt-2 w-24 bg-white dark:bg-zinc-700 shadow-lg rounded-lg py-1 z-10">
-                    <button
-                      onClick={() => handleEdit(index)}
-                      className="block w-full text-left px-4 py-2 text-sm text-zinc-700 dark:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-600"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => {
-                        onDeleteMessage(index);
-                        setMenuOpen(null);
-                      }}
-                      className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-zinc-100 dark:hover:bg-zinc-600"
-                    >
-                      Delete
-                    </button>
-                  </div>
-                )}
-              </div>
-            )}
           </div>
         ))}
       </div>

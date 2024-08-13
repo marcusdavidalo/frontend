@@ -1,16 +1,36 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import useTitle from "../hooks/useTitle";
-import {
-  ChevronDownIcon,
-  PlusIcon,
-  MinusIcon,
-} from "@heroicons/react/24/solid";
+import { ChevronDownIcon, PlusIcon } from "@heroicons/react/24/solid";
 
+// Helper function to get data from localStorage
+const getFromLocalStorage = (key) => {
+  const data = localStorage.getItem(key);
+  if (data) {
+    const parsedData = JSON.parse(data);
+    if (new Date().getTime() < parsedData.expiry) {
+      return parsedData.data;
+    }
+  }
+  return null;
+};
+
+// Helper function to set data to localStorage
+const setToLocalStorage = (key, data, ttl) => {
+  const expiry = new Date().getTime() + ttl;
+  localStorage.setItem(key, JSON.stringify({ data, expiry }));
+};
+
+// Fetch repository details
 const fetchRepositoryDetails = async (repoFullName) => {
   try {
     const { data } = await axios.get(
-      `https://api.github.com/repos/${repoFullName}`
+      `https://api.github.com/repos/${repoFullName}`,
+      {
+        headers: {
+          Authorization: `token ${process.env.REACT_APP_GITHUB_KEY}`,
+        },
+      }
     );
     return data;
   } catch (error) {
@@ -19,12 +39,21 @@ const fetchRepositoryDetails = async (repoFullName) => {
   }
 };
 
+// Fetch commits for a repository
 const fetchCommits = async (repoFullName) => {
   try {
     const { data } = await axios.get(
-      `https://api.github.com/repos/${repoFullName}/commits`
+      `https://api.github.com/repos/${repoFullName}/commits`,
+      {
+        headers: {
+          Authorization: `token ${process.env.REACT_APP_GITHUB_KEY}`,
+        },
+      }
     );
-    return data;
+    return data.map((commit) => ({
+      ...commit,
+      stats: commit.stats || { additions: 0, deletions: 0, changes: 0 },
+    }));
   } catch (error) {
     console.error(`Error fetching commits for ${repoFullName}`, error);
     return [];
@@ -33,51 +62,83 @@ const fetchCommits = async (repoFullName) => {
 
 const ProjectCard = ({ title, description, link, repoFullName }) => {
   const [commits, setCommits] = useState([]);
+  const [latestCommitStats, setLatestCommitStats] = useState({
+    additions: "N/A",
+    deletions: "N/A",
+    changes: "N/A",
+  });
 
   useEffect(() => {
-    fetchCommits(repoFullName).then(setCommits);
+    const fetchAndSetData = async () => {
+      const cacheKey = `commits_${repoFullName}`;
+      const cachedData = getFromLocalStorage(cacheKey);
+
+      if (cachedData) {
+        setCommits(cachedData);
+        if (cachedData.length > 0) {
+          const latestCommit = cachedData[0];
+          setLatestCommitStats(latestCommit.stats);
+        }
+      } else {
+        const commitsData = await fetchCommits(repoFullName);
+        setCommits(commitsData);
+        setToLocalStorage(cacheKey, commitsData, 5 * 24 * 60 * 60 * 1000); // Cache for 5 days
+        if (commitsData.length > 0) {
+          const latestCommit = commitsData[0];
+          setLatestCommitStats(latestCommit.stats);
+        }
+      }
+    };
+
+    fetchAndSetData();
   }, [repoFullName]);
 
   const hasCommits = commits.length > 0;
-  const latestCommit = hasCommits ? commits[0].commit.message : "No commits";
 
   return (
-    <div className="bg-white dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-800 p-6 rounded-lg shadow-md dark:shadow-black/70 transform transition duration-300 hover:scale-[1.02]">
-      <h3 className="text-xl font-semibold text-zinc-900 dark:text-zinc-200">
-        {title}
-      </h3>
-      <p className="text-sm text-zinc-600 dark:text-zinc-400 mt-2">
-        {description
-          ? description.substring(0, 100) + "..."
-          : "No description available."}
-      </p>
-      <div className="mt-4 flex items-center space-x-2">
-        <span
-          className={`text-sm font-medium ${
-            hasCommits ? "text-green-600" : "text-red-600"
-          }`}
-        >
-          {hasCommits ? (
-            <PlusIcon className="w-5 h-5 inline" />
-          ) : (
-            <MinusIcon className="w-5 h-5 inline" />
+    <div className="bg-white dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-800 p-6 rounded-lg shadow-md dark:shadow-black/70 transform transition duration-300 hover:scale-[1.02] flex flex-col justify-between">
+      <div className="space-y-4">
+        <h3 className="text-xl font-semibold text-zinc-900 dark:text-zinc-200">
+          {title}
+        </h3>
+        <p className="text-sm text-zinc-600 dark:text-zinc-400">
+          {description
+            ? description.substring(0, 100) + "..."
+            : "No description available."}
+        </p>
+        <div>
+          {hasCommits && (
+            <div className="text-xs text-zinc-500 dark:text-zinc-400">
+              <div className="flex items-center space-x-2">
+                <PlusIcon className="w-5 h-5 text-green-600 inline" />
+                <div className="font-semibold">Latest Activity:</div>
+              </div>
+              <div className="mt-1">
+                <span className="font-semibold">Additions:</span>{" "}
+                {latestCommitStats.additions}
+              </div>
+              <div>
+                <span className="font-semibold">Deletions:</span>{" "}
+                {latestCommitStats.deletions}
+              </div>
+              <div>
+                <span className="font-semibold">Changes:</span>{" "}
+                {latestCommitStats.changes}
+              </div>
+            </div>
           )}
-          {hasCommits ? " Recent Activity" : " No Recent Activity"}
-        </span>
-        {hasCommits && (
-          <span className="text-xs text-zinc-500 dark:text-zinc-400">
-            {latestCommit}
-          </span>
-        )}
+        </div>
       </div>
-      <a
-        href={link}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="mt-4 inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 transition focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-      >
-        View Project
-      </a>
+      <div className="mt-4">
+        <a
+          href={link}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 transition focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+        >
+          View Project
+        </a>
+      </div>
     </div>
   );
 };
@@ -110,23 +171,34 @@ const Projects = () => {
   const [projectsPerPage, setProjectsPerPage] = useState(6);
 
   useEffect(() => {
-    axios
-      .get("https://api.github.com/users/marcusdavidalo/repos")
-      .then(async (response) => {
-        const repos = response.data;
-        const detailedRepos = await Promise.all(
-          repos.map(async (repo) => {
-            const details = await fetchRepositoryDetails(
-              `${repo.owner.login}/${repo.name}`
-            );
-            return { ...repo, ...details };
-          })
-        );
-        setProjects(detailedRepos);
-      })
-      .catch((error) => {
-        console.error("Error fetching repos", error);
-      });
+    const fetchAndSetData = async () => {
+      const cacheKey = "projects";
+      const cachedData = getFromLocalStorage(cacheKey);
+
+      if (cachedData) {
+        setProjects(cachedData);
+      } else {
+        try {
+          const { data } = await axios.get(
+            "https://api.github.com/users/marcusdavidalo/repos"
+          );
+          const detailedRepos = await Promise.all(
+            data.map(async (repo) => {
+              const details = await fetchRepositoryDetails(
+                `${repo.owner.login}/${repo.name}`
+              );
+              return { ...repo, ...details };
+            })
+          );
+          setProjects(detailedRepos);
+          setToLocalStorage(cacheKey, detailedRepos, 5 * 24 * 60 * 60 * 1000); // Cache for 5 days
+        } catch (error) {
+          console.error("Error fetching repos", error);
+        }
+      }
+    };
+
+    fetchAndSetData();
   }, []);
 
   const filteredProjects = projects.filter((project) => {

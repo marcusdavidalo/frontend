@@ -8,8 +8,7 @@ const useMessageHandler = (
   initialMessages,
   setMessages,
   selectedModel,
-  systemPrompt,
-  isGroqModel
+  systemPrompt
 ) => {
   const [messages, setInternalMessages] = useState(initialMessages);
   const [isLoading, setIsLoading] = useState(false);
@@ -31,19 +30,22 @@ const useMessageHandler = (
     [setMessages]
   );
 
-  const sendMessageWithRetry = async (groqMessages, retryCount = 0) => {
-    try {
-      return await sendMessageToGroq(groqMessages, selectedModel);
-    } catch (error) {
-      if (retryCount < MAX_RETRIES) {
-        const delay = INITIAL_RETRY_DELAY * Math.pow(2, retryCount);
-        console.log(`Retrying in ${delay}ms...`);
-        await new Promise((resolve) => setTimeout(resolve, delay));
-        return sendMessageWithRetry(groqMessages, retryCount + 1);
+  const sendMessageWithRetry = useCallback(
+    async (groqMessages, retryCount = 0) => {
+      try {
+        return await sendMessageToGroq(groqMessages, selectedModel);
+      } catch (error) {
+        if (retryCount < MAX_RETRIES) {
+          const delay = INITIAL_RETRY_DELAY * Math.pow(2, retryCount);
+          console.log(`Retrying in ${delay}ms...`);
+          await new Promise((resolve) => setTimeout(resolve, delay));
+          return sendMessageWithRetry(groqMessages, retryCount + 1);
+        }
+        throw error;
       }
-      throw error;
-    }
-  };
+    },
+    [selectedModel]
+  );
 
   const processQueue = useCallback(async () => {
     if (isProcessing.current) return;
@@ -73,7 +75,7 @@ const useMessageHandler = (
       isProcessing.current = false;
       setTimeout(processQueue, 100);
     }
-  }, [selectedModel, systemPrompt, updateAssistantMessage]);
+  }, [systemPrompt, updateAssistantMessage, sendMessageWithRetry]);
 
   const handleSendMessage = async (input) => {
     const newMessages = [...messages, { role: "user", content: input }];

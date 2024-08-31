@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import ChatWindow from "../components/main/Chatbox";
 import useTitle from "../hooks/useTitle";
 import { getGroqModels } from "../utils/groqClient";
@@ -22,13 +22,28 @@ const Arda = () => {
     loadModels();
   }, []);
 
+  const getCurrentTime = useCallback(
+    () => ({
+      local: new Date().toLocaleTimeString(),
+      utc: new Date().toUTCString(),
+      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+    }),
+    []
+  );
+
   useEffect(() => {
     const updateSystemPrompt = () => {
-      const now = new Date();
-      const utcTime = now.toUTCString();
-      const localTime = now.toLocaleString();
+      const { local, utc, timezone } = getCurrentTime();
+
       setSystemPrompt(
-        `You are a helpful AI assistant named Arda. Current UTC time is ${utcTime}, and local time is ${localTime}.`
+        `Dont provide these information unless asked:\nCurrent Local Time: ${local}\nCurrent Time (UTC): ${utc}\nUser's Timezone: ${timezone}\nModel used: ${models[0]}
+        \nfollow all these rules:
+         - Be concise and accurate.
+         - Provide only information being asked of you.
+         - When solving math problems, show all steps. Don't give answers upfront; break down operations into additions/subtractions, never combine more than two numbers at a time. For multiplication/division, convert to additions/subtractions.
+         - do not provide information not being asked of you.
+         - when coding create a list of potential problems and modify the user's sent code to fix those problems accurately.
+        `
       );
     };
 
@@ -36,7 +51,7 @@ const Arda = () => {
     const interval = setInterval(updateSystemPrompt, 60000); // update every minute
 
     return () => clearInterval(interval);
-  }, []);
+  }, [models, getCurrentTime]);
 
   const handleConversationUpdate = (updatedConversation) => {
     setConversation(updatedConversation);

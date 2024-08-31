@@ -56,7 +56,7 @@ const ChatWindow = ({
       const promptMessages = [
         {
           role: "system",
-          content: `Only use information when asked: \nTone: Normal \nAdditional Information: \nCurrent Local Time: ${local}\nCurrent Time (UTC): ${utc}\nUser's Timezone: ${timezone}\nModel used: ${models[0]} \nWhen asked about time and date, always account for Daylight Savings Time in countries that use DST and break down the calculation for more accuracy.`,
+          content: `Only provide these information when asked: \nTone: Normal \nAdditional Information: \nCurrent Local Time: ${local}\nCurrent Time (UTC): ${utc}\nUser's Timezone: ${timezone}\nModel used: ${models[1]} \nWhen asked about time and date, always account for Daylight Savings Time in countries that use DST and break down the calculation for more accuracy.`,
         },
         {
           role: "system",

@@ -17,7 +17,7 @@ export const sendMessageToGroq = async (messages, model) => {
       messages: messages,
       model: model,
       max_tokens: 1024,
-      temperature: 0.6,
+      temperature: 0.5,
       top_p: 1,
     });
 

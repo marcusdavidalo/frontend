@@ -8,7 +8,6 @@ const ChatWindow = ({
   onConversationUpdate,
   models,
   systemPrompt,
-  onSystemPromptChange,
 }) => {
   const {
     messages,
@@ -20,7 +19,7 @@ const ChatWindow = ({
     conversation?.messages || [],
     (updatedMessages) =>
       onConversationUpdate({ ...conversation, messages: updatedMessages }),
-    models[0],
+    models[1],
     systemPrompt,
     true
   );

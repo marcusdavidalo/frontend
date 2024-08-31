@@ -19,7 +19,7 @@ const ChatWindow = ({
     conversation?.messages || [],
     (updatedMessages) =>
       onConversationUpdate({ ...conversation, messages: updatedMessages }),
-    models[1],
+    (models = "llama-3.1-70b-versatile"),
     systemPrompt,
     true
   );

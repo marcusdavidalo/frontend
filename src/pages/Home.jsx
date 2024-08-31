@@ -71,17 +71,17 @@ function Home() {
       <Hero />
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
         <Section
-          title="View Certificate"
-          description="Click the button below to view my certificate."
-          link={certificate}
-          linkText="View Certificate"
-          isExternal={true}
-        />
-        <Section
           title="View Resume"
           description="Click the button below to view my resume."
           link={resume}
           linkText="View Resume"
+          isExternal={true}
+        />
+        <Section
+          title="View Certificate"
+          description="Click the button below to view my certificate."
+          link={certificate}
+          linkText="View Certificate"
           isExternal={true}
         />
         <Section

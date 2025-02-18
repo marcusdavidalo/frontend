@@ -49,8 +49,8 @@ export const getGroqModels = async () => {
       const priorityB = priorityOrder.indexOf(b.owned_by);
 
       if (priorityA === priorityB) {
-        if (a.id === "llama-3.1-70b-versatile") return -1;
-        if (b.id === "llama-3.1-70b-versatile") return 1;
+        if (a.id === "deepseek-r1-distill-llama-70b") return -1;
+        if (b.id === "deepseek-r1-distill-llama-70b") return 1;
         return 0;
       }
 

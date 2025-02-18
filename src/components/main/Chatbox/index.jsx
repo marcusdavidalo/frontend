@@ -19,7 +19,7 @@ const ChatWindow = ({
     conversation?.messages || [],
     (updatedMessages) =>
       onConversationUpdate({ ...conversation, messages: updatedMessages }),
-    (models = "llama-3.1-70b-versatile"),
+    (models = "deepseek-r1-distill-llama-70b"),
     systemPrompt,
     true
   );
